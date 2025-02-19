@@ -153,6 +153,27 @@ variable "health_check_grace_period" {
   default     = 300
 }
 
+#######################
+# Capacity Providers
+#######################
+
+variable "default_capacity_provider_use_fargate" {
+  description = "Determines whether to use Fargate or autoscaling for default capacity provider strategy"
+  type        = bool
+  default     = true
+}
+
+variable "fargate_capacity_providers" {
+  description = "Map of Fargate capacity provider definitions to use for the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "autoscaling_capacity_providers" {
+  description = "Map of autoscaling capacity provider definitions to create for the cluster"
+  type        = any
+  default     = {}
+}
 
 # S3 Bucket
 variable "s3_bucket_arn" {

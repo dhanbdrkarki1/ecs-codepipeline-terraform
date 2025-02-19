@@ -44,6 +44,29 @@ module "ecs" {
   scale_down_adjustment = var.ecs_scale_down_adjustment
   cooldown_period       = var.ecs_cooldown_period
 
+  # Cluster capacity providers
+  # Capacity provider - autoscaling groups
+  default_capacity_provider_use_fargate = false
+  autoscaling_capacity_providers = {
+    # On-demand instances
+    ex_1 = {
+      auto_scaling_group_arn         = module.asg.asg_arn
+      managed_termination_protection = "ENABLED"
+
+      managed_scaling = {
+        maximum_scaling_step_size = 5
+        minimum_scaling_step_size = 1
+        status                    = "ENABLED"
+        target_capacity           = 60
+      }
+
+      default_capacity_provider_strategy = {
+        weight = 60
+        base   = 20
+      }
+    }
+  }
+
   # ECS Log Group
   ecs_log_group_name = module.ecs_log_group.log_group_name
 
@@ -57,12 +80,8 @@ module "ecs" {
   #S3 bucket -> used to acce
   # s3_bucket_arn = module.s3.bucket_arn
 
-  container_path            = var.ecs_container_path             # path on the container to mount the host volume at e.g. /app
-  read_only                 = var.ecs_read_only_container_volume # read-only access to the volume
-  enable_container_insights = var.ecs_enable_container_insights
-
-  # If CodeDeploy is used for deployment, set deployment_controller_type = "CODE_DEPLOY" otherwise "ECS" for ECS deployment type.
-  deployment_controller_type = var.ecs_deployment_controller_type
+  container_path = var.ecs_container_path             # path on the container to mount the host volume at e.g. /app
+  read_only      = var.ecs_read_only_container_volume # read-only access to the volume
 
   # require for health check to pass
   health_check_grace_period = var.ecs_health_check_grace_period
