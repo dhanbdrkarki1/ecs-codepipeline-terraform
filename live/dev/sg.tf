@@ -21,7 +21,7 @@ module "web_sg" {
 # ALB Security Groups
 #================================
 module "alb_sg" {
-  source              = "../../modules/services/sg"
+  source              = "../../modules/aws/sg"
   create              = true
   name                = "alb-sg"
   description         = "Security group for ALB."

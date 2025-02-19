@@ -2,7 +2,7 @@
 # AWS Load Balancer
 #================================
 module "alb" {
-  source              = "../../modules/services/alb"
+  source              = "../../modules/aws/alb"
   create              = true
   name                = "web-app-lb"
   vpc_id              = module.vpc.vpc_id

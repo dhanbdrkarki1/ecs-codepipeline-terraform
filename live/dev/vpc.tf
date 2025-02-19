@@ -2,7 +2,7 @@
 # Amazon VPC
 #================================
 module "vpc" {
-  source = "../../modules/services/vpc"
+  source = "../../modules/aws/vpc"
   create = true
 
   name                       = "dhan-vpc"

@@ -2,7 +2,7 @@
 # EC2 Auto Scaling
 #================================
 module "asg" {
-  source                    = "../../modules/services/asg"
+  source                    = "../../modules/aws/asg"
   create                    = true
   name                      = var.project_name
   min_size                  = 2
