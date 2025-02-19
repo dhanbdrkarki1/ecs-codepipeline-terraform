@@ -10,7 +10,8 @@ module "ecs" {
 
   ecs_task_family_name = var.ecs_task_family_name
   container_name       = var.ecs_container_name
-  app_image            = module.ecr.repository_url
+  # app_image            = module.ecr.repository_url
+  app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
 
   container_port          = var.ecs_container_port
   app_cpu                 = var.ecs_app_cpu
