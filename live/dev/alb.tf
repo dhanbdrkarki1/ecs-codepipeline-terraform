@@ -15,7 +15,7 @@ module "alb" {
     ip = {
       name                              = "todo" # update it.
       protocol                          = "HTTP"
-      container_port                    = 3000
+      container_port                    = 80
       target_type                       = "ip"
       deregistration_delay              = 300 # Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused.
       load_balancing_cross_zone_enabled = true

@@ -17,14 +17,12 @@ module "asg" {
   create_launch_template      = true
   launch_template_name        = "${var.project_name}-${var.environment}-lt"
   launch_template_description = "Launch Template for ${var.project_name}"
-  # comment if no need
-  # user_data              = base64encode(file("${path.root}/user-data/install-awscli.sh"))
-
-  update_default_version = true
-  image_id               = "ami-0cb91c7de36eed2cb"
-  key_name               = "dhan-demo"
-  instance_type          = "t2.micro"
-  security_groups        = [module.ecs_sg.security_group_id]
+  user_data                   = base64encode(file("${path.root}/user-data/install-awscli.sh"))
+  update_default_version      = true
+  image_id                    = "ami-0cb91c7de36eed2cb"
+  key_name                    = "dhan-demo"
+  instance_type               = "t2.micro"
+  security_groups             = [module.ecs_sg.security_group_id]
   # iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it
 
   # Scaling Policy

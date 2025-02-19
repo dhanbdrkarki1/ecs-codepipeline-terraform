@@ -1,4 +1,63 @@
 #================================
+# Instance Profile
+#================================
+module "instance_profile" {
+  source                      = "../../modules/aws/iam"
+  create                      = true
+  create_ec2_instance_profile = true
+  role_name                   = "EC2InstanceRole"
+  role_description            = "IAM EC2 Instance role for ECS"
+
+  # Trust relationship policy for EC2
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  # ECS Instance Policy
+  policy_document = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AmazonEC2ContainerServiceforEC2Role"
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeTags",
+          "ecs:CreateCluster",
+          "ecs:DeregisterContainerInstance",
+          "ecs:DiscoverPollEndpoint",
+          "ecs:Poll",
+          "ecs:RegisterContainerInstance",
+          "ecs:StartTelemetrySession",
+          "ecs:UpdateContainerInstancesState",
+          "ecs:Submit*",
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+  custom_tags = {
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+
+#================================
 # ECS Task Execution Role and Policy
 #================================
 module "ecs_task_execution_role" {
