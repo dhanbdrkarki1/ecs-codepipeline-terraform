@@ -43,6 +43,76 @@ variable "cluster_service_connect_defaults" {
 ##############
 # Service
 ##############
+variable "network_mode" {
+  description = "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`"
+  type        = string
+  default     = "awsvpc"
+}
+
+
+
+variable "deployment_circuit_breaker" {
+  description = "Configuration block for deployment circuit breaker"
+  type        = any
+  default     = {}
+}
+
+variable "deployment_controller" {
+  description = "Configuration block for deployment controller configuration"
+  type        = any
+  default     = {}
+}
+
+variable "deployment_maximum_percent" {
+  description = "Upper limit (as a percentage of the service's `desired_count`) of the number of running tasks that can be running in a service during a deployment"
+  type        = number
+  default     = 200
+}
+
+variable "deployment_minimum_healthy_percent" {
+  description = "Lower limit (as a percentage of the service's `desired_count`) of the number of running tasks that must remain running and healthy in a service during a deployment"
+  type        = number
+  default     = 66
+}
+
+variable "load_balancer" {
+  description = "Configuration block for load balancers"
+  type        = any
+  default     = {}
+}
+
+# variable "deployment_controller_type" {
+#   type        = string
+#   default     = "ECS"
+#   description = "Type of deployment controller. Valid values: CODE_DEPLOY, ECS, EXTERNAL"
+# }
+
+# variable "enable_deployment_circuit_breaker" {
+#   description = "Whether to enable the deployment circuit breaker logic for the service."
+#   default     = false
+#   type        = bool
+# }
+
+# variable "enable_deployment_circuit_breaker_rollback" {
+#   description = "Whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
+#   default     = false
+#   type        = bool
+# }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 variable "security_groups_ids" {
   description = "A list of security group IDs to assign to the ECS Task"
@@ -56,6 +126,11 @@ variable "subnet_groups_ids" {
   default     = []
 }
 
+variable "assign_public_ip" {
+  description = "Assign a public IP address to the ENI (Fargate launch type only)"
+  type        = bool
+  default     = false
+}
 
 
 variable "ecs_task_family_name" {
@@ -288,24 +363,6 @@ variable "read_only" {
 # }
 
 
-# Deployment
-variable "deployment_controller_type" {
-  type        = string
-  default     = "ECS"
-  description = "Type of deployment controller. Valid values: CODE_DEPLOY, ECS, EXTERNAL"
-}
-
-variable "enable_deployment_circuit_breaker" {
-  description = "Whether to enable the deployment circuit breaker logic for the service."
-  default     = false
-  type        = bool
-}
-
-variable "enable_deployment_circuit_breaker_rollback" {
-  description = "Whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
-  default     = false
-  type        = bool
-}
 
 # Tags
 variable "ecs_tags" {

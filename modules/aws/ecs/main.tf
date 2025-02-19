@@ -88,24 +88,62 @@ resource "aws_ecs_service" "main" {
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
 
-  network_configuration {
-    security_groups  = var.security_groups_ids
-    subnets          = var.subnet_groups_ids
-    assign_public_ip = false
+  dynamic "network_configuration" {
+    for_each = var.network_mode == "awsvpc" ? [local.network_configuration] : []
+
+    content {
+      assign_public_ip = network_configuration.value.assign_public_ip
+      security_groups  = network_configuration.value.security_groups
+      subnets          = network_configuration.value.subnets
+    }
   }
 
-  load_balancer {
-    target_group_arn = var.target_group
-    container_name   = var.container_name
-    container_port   = var.container_port
+  # network_configuration {
+  #   security_groups  = var.security_groups_ids
+  #   subnets          = var.subnet_groups_ids
+  #   assign_public_ip = false
+  # }
+
+  # load_balancer {
+  #   target_group_arn = var.target_group
+  #   container_name   = var.container_name
+  #   container_port   = var.container_port
+  # }
+
+  # deployment_circuit_breaker {
+  #   enable   = var.enable_deployment_circuit_breaker
+  #   rollback = var.enable_deployment_circuit_breaker_rollback
+  # }
+  # deployment_controller {
+  #   type = var.deployment_controller_type
+  # }
+
+  dynamic "load_balancer" {
+    for_each = { for k, v in var.load_balancer : k => v }
+
+    content {
+      container_name   = load_balancer.value.container_name
+      container_port   = load_balancer.value.container_port
+      elb_name         = try(load_balancer.value.elb_name, null)
+      target_group_arn = try(load_balancer.value.target_group_arn, null)
+    }
   }
 
-  deployment_circuit_breaker {
-    enable   = var.enable_deployment_circuit_breaker
-    rollback = var.enable_deployment_circuit_breaker_rollback
+  dynamic "deployment_circuit_breaker" {
+    for_each = length(var.deployment_circuit_breaker) > 0 ? [var.deployment_circuit_breaker] : []
+
+    content {
+      enable   = deployment_circuit_breaker.value.enable
+      rollback = deployment_circuit_breaker.value.rollback
+    }
   }
-  deployment_controller {
-    type = var.deployment_controller_type
+
+  dynamic "deployment_controller" {
+    for_each = length(var.deployment_controller) > 0 ? [var.deployment_controller] : []
+
+    content {
+      type = try(deployment_controller.value.type, null)
+    }
   }
 
   tags = merge(

@@ -13,6 +13,15 @@ module "ecs" {
   ]
 
   # Service
+  load_balancer = {
+    service = {
+      target_group_arn = module.alb.target_groups["ip"].arn
+      container_name   = var.ecs_container_name
+      container_port   = var.ecs_container_port
+    }
+  }
+
+
   launch_type         = "EC2"
   security_groups_ids = [module.ecs_sg.security_group_id]
   subnet_groups_ids   = module.vpc.public_subnet_ids

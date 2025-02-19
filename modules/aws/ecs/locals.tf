@@ -17,6 +17,13 @@ locals {
     }
   }
 
+  # Flattened `network_configuration`
+  network_configuration = {
+    assign_public_ip = var.assign_public_ip
+    security_groups  = var.security_groups_ids
+    subnets          = var.subnet_groups_ids
+  }
+
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
   region     = data.aws_region.current.name
