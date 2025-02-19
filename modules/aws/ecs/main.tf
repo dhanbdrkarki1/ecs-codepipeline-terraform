@@ -18,7 +18,7 @@ resource "aws_ecs_cluster" "main" {
 
 data "template_file" "container-definition" {
   count    = var.create ? 1 : 0
-  template = file("${path.module}/templates/ecs/container-definition.json.tpl")
+  template = var.container_definition_template
   vars = {
     app_image      = var.app_image
     container_port = var.container_port

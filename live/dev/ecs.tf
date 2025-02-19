@@ -32,6 +32,9 @@ module "ecs" {
   ecs_task_execution_role = module.ecs_task_execution_role.role_arn
   ecs_auto_scale_role     = module.ecs_auto_scale_role.role_arn
 
+  # Container Definition Template
+  container_definition_template = file("${path.module}/templates/container_definition.tpl")
+
   #S3 bucket -> used to acce
   # s3_bucket_arn = module.s3.bucket_arn
 

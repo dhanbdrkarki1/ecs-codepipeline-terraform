@@ -169,6 +169,7 @@ variable "transit_encryption_port" {
 #---------------------------
 # Container Task Definition
 #---------------------------
+
 #container
 variable "container_name" {
   description = "The name of the container running ECS tasks"
@@ -214,6 +215,12 @@ variable "aws_region" {
   type        = string
   description = "The AWS region things are created in"
   default     = "us-east-1"
+}
+
+variable "container_definition_template" {
+  description = "Template file for Container Definition to be used by ECS Service."
+  default     = null
+  type        = string
 }
 
 
