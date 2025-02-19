@@ -14,6 +14,36 @@ variable "name" {
   default     = ""
 }
 
+##############
+# Cluster
+##############
+variable "cluster_configuration" {
+  description = "The execute command configuration for the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "cluster_settings" {
+  description = "List of configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster"
+  type        = any
+  default = [
+    {
+      name  = "containerInsights"
+      value = "enabled"
+    }
+  ]
+}
+
+variable "cluster_service_connect_defaults" {
+  description = "Configures a default Service Connect namespace"
+  type        = map(string)
+  default     = {}
+}
+
+##############
+# Service
+##############
+
 variable "security_groups_ids" {
   description = "A list of security group IDs to assign to the ECS Task"
   type        = list(string)
@@ -25,6 +55,7 @@ variable "subnet_groups_ids" {
   type        = list(string)
   default     = []
 }
+
 
 
 variable "ecs_task_family_name" {
@@ -272,12 +303,6 @@ variable "enable_deployment_circuit_breaker" {
 
 variable "enable_deployment_circuit_breaker_rollback" {
   description = "Whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
-  default     = false
-  type        = bool
-}
-
-variable "enable_container_insights" {
-  description = "Whether to enable Amazon ECS container insights on Cluster"
   default     = false
   type        = bool
 }

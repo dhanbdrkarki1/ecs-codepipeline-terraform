@@ -5,10 +5,23 @@ resource "aws_ecs_cluster" "main" {
   count = var.create ? 1 : 0
   name  = local.name_prefix
 
-  setting {
-    name  = "containerInsights"
-    value = var.enable_container_insights ? "enabled" : "disabled"
+  dynamic "service_connect_defaults" {
+    for_each = length(var.cluster_service_connect_defaults) > 0 ? [var.cluster_service_connect_defaults] : []
+
+    content {
+      namespace = service_connect_defaults.value.namespace
+    }
   }
+
+  dynamic "setting" {
+    for_each = flatten([var.cluster_settings])
+
+    content {
+      name  = setting.value.name
+      value = setting.value.value
+    }
+  }
+
   tags = merge(
     { "Name" = "${local.name_prefix}" },
     var.ecs_tags,

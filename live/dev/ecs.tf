@@ -4,6 +4,13 @@ module "ecs" {
   create = true
   name   = var.ecs_name
 
+  # Cluster
+  cluster_settings = [
+    {
+      name  = "containerInsights"
+      value = "enabled" # Whether to enable Amazon ECS container insights on Cluster
+    }
+  ]
 
   # Service
   launch_type         = "EC2"
