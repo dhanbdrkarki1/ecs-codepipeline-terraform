@@ -25,7 +25,7 @@ module "asg" {
   key_name               = "dhan"
   instance_type          = "t2.micro"
   security_groups        = [module.web_sg.security_group_id]
-  iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it
+  # iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it
 
   # Scaling Policy
   create_auto_scaling_policy = true
