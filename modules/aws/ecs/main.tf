@@ -26,7 +26,7 @@ data "template_file" "container-definition" {
     app_memory     = var.app_memory
     aws_region     = var.aws_region
     container_name = var.container_name
-    log_group_name = local.log_group_name
+    log_group_name = var.ecs_log_group_name
 
     # volume mount
     mount_points = local.mount_points

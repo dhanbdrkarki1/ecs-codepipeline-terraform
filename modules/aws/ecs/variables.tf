@@ -113,11 +113,24 @@ variable "step_scaling_adjustment_type" {
   default     = "ChangeInCapacity"
 }
 
+# Log Group
+variable "ecs_log_group_name" {
+  description = "CloudWatch Log Group name for ECS logs"
+  type        = string
+  default     = null
+}
 
-variable "log_retention_in_days" {
-  type        = number
-  description = "Specifies the number of days you want to retain log events in the specified log group."
-  default     = 30
+# IAM Role
+variable "ecs_task_role_arn" {
+  description = "ARN of the IAM role that allows Amazon ECS to make calls to other AWS services."
+  type        = string
+  default     = null
+}
+
+variable "ecs_auto_scale_role" {
+  description = "ARN of IAM role for ECS auto scaling"
+  type        = string
+  default     = null
 }
 
 
@@ -248,39 +261,6 @@ variable "enable_container_insights" {
   default     = false
   type        = bool
 }
-
-# New Relic Monitoring
-variable "enable_newrelic_monitoring" {
-  type        = bool
-  default     = true
-  description = "Specify whether to enable new relic sidecar container for monitoring or not."
-}
-
-variable "newrelic_license_key_parameter_name" {
-  type        = string
-  default     = "/newrelic-infra/ecs/license-key"
-  description = "The parameter name for New Relic license key. Get it from new relic one."
-  sensitive   = true
-}
-
-variable "new_relic_image" {
-  type        = string
-  default     = "newrelic/nri-ecs:1.11.6"
-  description = "The name of the new relic infrastructure image used as a sidecar container with the main container."
-}
-
-variable "new_relic_cpu" {
-  description = "CPU units for the New Relic sidecar container"
-  type        = number
-  default     = 256
-}
-
-variable "new_relic_memory" {
-  description = "Memory in MiB for the New Relic sidecar container"
-  type        = number
-  default     = 512
-}
-
 
 # Tags
 variable "ecs_tags" {

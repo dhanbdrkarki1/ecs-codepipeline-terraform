@@ -1,7 +1,6 @@
 
 locals {
-  name_prefix    = "${var.custom_tags["Project"] != "" ? var.custom_tags["Project"] : "default-project"}-${var.custom_tags["Environment"] != "" ? var.custom_tags["Environment"] : "default-env"}-${var.name != "" ? var.name : "default-name"}-cluster"
-  log_group_name = "ecs/${local.name_prefix}"
+  name_prefix = "${var.custom_tags["Project"] != "" ? var.custom_tags["Project"] : "default-project"}-${var.custom_tags["Environment"] != "" ? var.custom_tags["Environment"] : "default-env"}-${var.name != "" ? var.name : "default-name"}-cluster"
 
   fargate_cpu    = var.app_cpu
   fargate_memory = var.app_memory

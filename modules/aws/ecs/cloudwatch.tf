@@ -1,26 +1,4 @@
 #-------------------------------------------
-# CloudWatch Logs for ECS Tasks
-#-------------------------------------------
-
-# Set up CloudWatch group and log stream and retain logs for 30 days
-resource "aws_cloudwatch_log_group" "ecs_task_logs" {
-  count             = var.create ? 1 : 0
-  name              = local.log_group_name
-  retention_in_days = var.log_retention_in_days
-  tags = merge(
-    { "Name" = "${local.name_prefix}" },
-    var.ecs_tags,
-    var.custom_tags
-  )
-}
-
-# resource "aws_cloudwatch_log_stream" "log_stream" {
-#   count          = var.create ? 1 : 0
-#   name           = "${local.name_prefix}-log-stream"
-#   log_group_name = aws_cloudwatch_log_group.ecs_task_logs[0].name
-# }
-
-#-------------------------------------------
 # CloudWatch Alarm ECS Auto Scaling
 #-------------------------------------------
 
