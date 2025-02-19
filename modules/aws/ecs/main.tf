@@ -1,26 +1,6 @@
 #########
 # ECS
 #########
-
-locals {
-  name_prefix    = "${var.custom_tags["Project"] != "" ? var.custom_tags["Project"] : "default-project"}-${var.custom_tags["Environment"] != "" ? var.custom_tags["Environment"] : "default-env"}-${var.name != "" ? var.name : "default-name"}-cluster"
-  log_group_name = "ecs/${local.name_prefix}"
-  # new relic
-  new_relic_log_group_name = "newrelic/${local.name_prefix}"
-
-  # Calculating the required fargate_cpu and fargate_memory based on the container specification for app and new relic.
-  fargate_cpu    = var.enable_newrelic_monitoring ? var.app_cpu + var.new_relic_cpu : var.app_cpu
-  fargate_memory = var.enable_newrelic_monitoring ? var.app_memory + var.new_relic_memory : var.app_memory
-
-  # for efs volume
-  source_volume_name = var.mount_efs_volume ? "${var.name != "" ? var.name : "default-name"}-efs-volume" : null
-  mount_points = var.mount_efs_volume ? jsonencode([{
-    "sourceVolume"  = local.source_volume_name,
-    "containerPath" = var.container_path
-    "readOnly"      = var.read_only
-  }]) : jsonencode([])
-}
-
 resource "aws_ecs_cluster" "main" {
   count = var.create ? 1 : 0
   name  = local.name_prefix
@@ -50,16 +30,6 @@ data "template_file" "container-definition" {
 
     # volume mount
     mount_points = local.mount_points
-
-    #monitoring
-    enable_newrelic_monitoring = var.enable_newrelic_monitoring
-    new_relic_image            = var.new_relic_image
-    new_relic_cpu              = var.new_relic_cpu
-    new_relic_memory           = var.new_relic_memory
-    new_relic_log_group_name   = local.new_relic_log_group_name
-
-    # ssm for new relic
-    ssm_license_parameter_name = var.enable_newrelic_monitoring ? element(data.aws_ssm_parameter.new_relic_secret[*].name, 0) : ""
   }
 }
 
