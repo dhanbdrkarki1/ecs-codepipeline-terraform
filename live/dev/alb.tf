@@ -69,11 +69,11 @@ module "alb" {
           actions = [
             {
               type = "forward"
-              # for EC2 Target (Instance)
-              # target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
-
               # For ECS Target (ip)
               target_group_key = "ip"
+
+              # for EC2 Target (Instance)
+              # target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
             }
           ]
 

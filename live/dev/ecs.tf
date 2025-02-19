@@ -1,7 +1,7 @@
 # ECS
 module "ecs" {
   source = "../../modules/aws/ecs"
-  create = false
+  create = true
   name   = var.ecs_name
 
 

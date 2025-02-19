@@ -2,28 +2,34 @@
 # EC2 Auto Scaling
 #================================
 module "asg" {
-  source                    = "../../modules/aws/asg"
-  create                    = true
-  name                      = var.project_name
+  source = "../../modules/aws/asg"
+  create = true
+  name   = var.project_name
+
+  # Auto Scaling
   min_size                  = 2
   desired_capacity          = 2
   max_size                  = 4
-  vpc_zone_identifier       = module.vpc.private_subnet_ids
+  vpc_zone_identifier       = module.vpc.public_subnet_ids
   health_check_type         = "ELB"
   health_check_grace_period = 300
-  target_group_arns         = module.alb.target_group_arns
+  target_group_arns         = module.alb.target_group_arns["ip"]
 
   # Launch Template
   create_launch_template      = true
   launch_template_name        = "${var.project_name}-${var.environment}-lt"
   launch_template_description = "Launch Template for ${var.project_name}"
-  user_data                   = base64encode(file("${path.root}/user-data/install-awscli.sh"))
-  update_default_version      = true
-  image_id                    = "ami-0cb91c7de36eed2cb"
-  key_name                    = "dhan-demo"
-  instance_type               = "t2.micro"
-  security_groups             = [module.ecs_sg.security_group_id]
-  # iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=${module.ecs.ecs_cluster_name} >> /etc/ecs/ecs.config
+  EOF
+  )
+  update_default_version = true
+  image_id               = "ami-08ef92cd73f7c76ee"
+  key_name               = "dhan-demo"
+  instance_type          = "t3.small"
+  security_groups        = [module.ecs_sg.security_group_id]
+  iam_instance_profile   = module.instance_profile.instance_profile_name # disable if you don't want to use it
 
   # Scaling Policy
   create_auto_scaling_policy = true
