@@ -20,27 +20,6 @@ resource "aws_cloudwatch_log_group" "ecs_task_logs" {
 #   log_group_name = aws_cloudwatch_log_group.ecs_task_logs[0].name
 # }
 
-
-#-------------------------------------------
-# CloudWatch Logs for New Relic
-#-------------------------------------------
-resource "aws_cloudwatch_log_group" "new_relic_logs" {
-  count             = var.create && var.enable_newrelic_monitoring ? 1 : 0
-  name              = local.new_relic_log_group_name
-  retention_in_days = var.log_retention_in_days
-  tags = merge(
-    { "Name" = "${local.name_prefix}" },
-    var.ecs_tags,
-    var.custom_tags
-  )
-}
-
-resource "aws_cloudwatch_log_stream" "new_relic_log_stream" {
-  count          = var.create && var.enable_newrelic_monitoring ? 1 : 0
-  name           = "${local.new_relic_log_group_name}-log-stream"
-  log_group_name = aws_cloudwatch_log_group.new_relic_logs[0].name
-}
-
 #-------------------------------------------
 # CloudWatch Alarm ECS Auto Scaling
 #-------------------------------------------
