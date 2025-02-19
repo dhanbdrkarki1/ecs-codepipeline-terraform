@@ -24,7 +24,7 @@ module "asg" {
   image_id               = "ami-09ad6bca8b1dfb96b"
   key_name               = "dhan"
   instance_type          = "t2.micro"
-  security_groups        = [module.web_sg.security_group_id]
+  security_groups        = [module.ecs_sg.security_group_id]
   # iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it
 
   # Scaling Policy

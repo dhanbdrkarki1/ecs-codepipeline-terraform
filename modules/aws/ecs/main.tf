@@ -37,11 +37,11 @@ data "template_file" "container-definition" {
 resource "aws_ecs_task_definition" "app" {
   count                    = var.create ? 1 : 0
   family                   = var.ecs_task_family_name
-  execution_role_arn       = aws_iam_role.task_execution_role[0].arn
+  execution_role_arn       = try(var.ecs_task_execution_role, null)
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = local.fargate_cpu
-  memory                   = local.fargate_memory
+  cpu                      = var.app_cpu
+  memory                   = var.app_memory
   container_definitions    = element(data.template_file.container-definition.*.rendered, count.index)
 
   dynamic "volume" {

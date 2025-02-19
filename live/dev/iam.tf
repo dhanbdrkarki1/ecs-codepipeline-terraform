@@ -2,7 +2,7 @@
 # ECS Task Execution Role and Policy
 #================================
 module "ecs_task_execution_role" {
-  source           = "../../modules/services/iam"
+  source           = "../../modules/aws/iam"
   create           = true
   role_name        = "TaskExectionRole"
   role_description = "IAM role for ECS Task"
@@ -69,7 +69,7 @@ module "ecs_task_execution_role" {
 # ECS Auto Scaling Role and Policy
 #================================
 module "ecs_auto_scale_role" {
-  source           = "../../modules/services/iam"
+  source           = "../../modules/aws/iam"
   create           = true
   role_name        = "ECSAutoScalingRole"
   role_description = "IAM role for ECS Auto Scaling"

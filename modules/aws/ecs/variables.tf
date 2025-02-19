@@ -121,7 +121,7 @@ variable "ecs_log_group_name" {
 }
 
 # IAM Role
-variable "ecs_task_role_arn" {
+variable "ecs_task_execution_role" {
   description = "ARN of the IAM role that allows Amazon ECS to make calls to other AWS services."
   type        = string
   default     = null

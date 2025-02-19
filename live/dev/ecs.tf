@@ -1,12 +1,12 @@
 # ECS
 module "ecs" {
-  source = "./modules/services/ecs"
+  source = "../../modules/aws/ecs"
   create = var.create_ecs
   name   = var.ecs_name
 
   security_groups_ids = [module.ecs_sg.security_group_id]
   subnet_groups_ids   = module.vpc.public_subnet_ids
-  target_group        = module.alb.alb_target_group_arns["ip"]
+  target_group        = module.alb.target_group_arns["ip"]
 
   ecs_task_family_name = var.ecs_task_family_name
   container_name       = var.ecs_container_name
@@ -26,14 +26,14 @@ module "ecs" {
   cooldown_period       = var.ecs_cooldown_period
 
   # ECS Log Group
-  ecs_log_group_name = module.ecs_log_group.name
+  ecs_log_group_name = module.ecs_log_group.log_group_name
 
   # ECS Role
   ecs_task_execution_role = module.ecs_task_execution_role.role_arn
   ecs_auto_scale_role     = module.ecs_auto_scale_role.role_arn
 
   # Container Definition Template
-  container_definition_template = file("${path.module}/templates/container_definition.tpl")
+  container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
 
   #S3 bucket -> used to acce
   # s3_bucket_arn = module.s3.bucket_arn
