@@ -16,4 +16,8 @@ locals {
       cloud_watch_log_group_name = try(aws_cloudwatch_log_group.this[0].name, null)
     }
   }
+
+  account_id = data.aws_caller_identity.current.account_id
+  partition  = data.aws_partition.current.partition
+  region     = data.aws_region.current.name
 }
