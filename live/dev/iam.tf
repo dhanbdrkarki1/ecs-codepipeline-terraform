@@ -25,21 +25,18 @@ module "ecs_task_execution_role" {
   policy_document = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # CloudWatch Logs permissions
       {
+        Sid    = "CloudWatchLogsPermissions"
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = [
-          "${try(module.ecs_log_group.log_group_arn, "*")}",
-          "${try(module.ecs_log_group.log_group_arn, "*")}:*"
-        ]
+        Resource = "*"
       },
-      # ECR Permissions
       {
+        Sid    = "ECRAuthorizationToken"
         Effect = "Allow"
         Action = [
           "ecr:GetAuthorizationToken"
@@ -47,13 +44,14 @@ module "ecs_task_execution_role" {
         Resource = "*"
       },
       {
+        Sid    = "ECRRepositoryAccess"
         Effect = "Allow"
         Action = [
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
+          "ecr:BatchGetImage"
         ]
-        Resource = try(module.ecr.arn, "*")
+        Resource = "*"
       }
     ]
   })
@@ -63,6 +61,7 @@ module "ecs_task_execution_role" {
     Project     = var.project_name
   }
 }
+
 
 
 #================================

@@ -166,6 +166,19 @@ variable "transit_encryption_port" {
   default     = 2049
 }
 
+# Service
+variable "launch_type" {
+  description = "Launch type on which to run your service. The valid values are `EC2`, `FARGATE`, and `EXTERNAL`. Defaults to `FARGATE`"
+  type        = string
+  default     = "FARGATE"
+}
+
+variable "scheduling_strategy" {
+  description = "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`"
+  type        = string
+  default     = "REPLICA"
+}
+
 #---------------------------
 # Container Task Definition
 #---------------------------

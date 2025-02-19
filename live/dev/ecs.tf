@@ -4,6 +4,9 @@ module "ecs" {
   create = var.create_ecs
   name   = var.ecs_name
 
+
+  # Service
+  launch_type         = "EC2"
   security_groups_ids = [module.ecs_sg.security_group_id]
   subnet_groups_ids   = module.vpc.public_subnet_ids
   target_group        = module.alb.target_group_arns["ip"]

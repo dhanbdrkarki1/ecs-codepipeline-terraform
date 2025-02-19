@@ -10,7 +10,7 @@ terraform {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "cloudtech"
+  profile = "default"
   default_tags {
     tags = {
       OwnedBy    = "Dhan"

@@ -21,8 +21,8 @@ module "asg" {
   # user_data              = base64encode(file("${path.root}/user-data/install-awscli.sh"))
 
   update_default_version = true
-  image_id               = "ami-09ad6bca8b1dfb96b"
-  key_name               = "dhan"
+  image_id               = "ami-0cb91c7de36eed2cb"
+  key_name               = "dhan-demo"
   instance_type          = "t2.micro"
   security_groups        = [module.ecs_sg.security_group_id]
   # iam_instance_profile   = module.ec2_instance_profile.instance_profile_name # disable if you don't want to use it

@@ -18,9 +18,9 @@ ecs_container_name          = "todo-test"
 ecs_container_port          = 80
 ecs_app_cpu                 = 256
 ecs_app_memory              = 512
-ecs_desired_container_count = 1
+ecs_desired_container_count = 2
 
-ecs_min_capacity          = 1
+ecs_min_capacity          = 2
 ecs_max_capacity          = 4
 ecs_scale_up_adjustment   = 1
 ecs_scale_down_adjustment = -1

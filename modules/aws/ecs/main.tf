@@ -71,8 +71,8 @@ resource "aws_ecs_service" "main" {
   cluster                           = aws_ecs_cluster.main[0].id
   task_definition                   = aws_ecs_task_definition.app[0].arn
   desired_count                     = var.desired_container_count
-  launch_type                       = "FARGATE"
-  scheduling_strategy               = "REPLICA"
+  launch_type                       = var.launch_type
+  scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
 
   network_configuration {
