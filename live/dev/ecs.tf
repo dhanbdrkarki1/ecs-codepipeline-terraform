@@ -15,17 +15,17 @@ module "ecs" {
   # Service
   load_balancer = {
     service = {
-      target_group_arn = module.alb.target_group_arns["ip"]
+      target_group_arn = module.alb.target_group_arns["ec2-instance"]
       container_name   = var.ecs_container_name
       container_port   = var.ecs_container_port
     }
   }
 
 
-  launch_type         = "EC2"
+  # launch_type         = "EC2" # Note: Specifying both a launch type and capacity provider strategy is not supported
   security_groups_ids = [module.ecs_sg.security_group_id]
   subnet_groups_ids   = module.vpc.public_subnet_ids
-  target_group        = module.alb.target_group_arns["ip"]
+  # target_group        = module.alb.target_group_arns["ec2-instance"] # no need
 
 
   # Container Definition
@@ -45,18 +45,8 @@ module "ecs" {
   # Task Definition
   ecs_task_family_name     = var.ecs_task_family_name
   ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
-  requires_compatibilities = ["FARGATE"]
-
-
-
-  desired_count = var.ecs_desired_count
-
-  #scaling
-  min_capacity          = var.ecs_min_capacity
-  max_capacity          = var.ecs_max_capacity
-  scale_up_adjustment   = var.ecs_scale_up_adjustment
-  scale_down_adjustment = var.ecs_scale_down_adjustment
-  cooldown_period       = var.ecs_cooldown_period
+  requires_compatibilities = ["EC2"]
+  network_mode             = "bridge" # Use bridge for EC2 launch type, For Fargate, use "Fargate"
 
   # Cluster capacity providers
   # Capacity provider - autoscaling groups
@@ -64,19 +54,20 @@ module "ecs" {
   autoscaling_capacity_providers = {
     # On-demand instances
     test-app-cp1 = {
-      auto_scaling_group_arn         = module.asg.asg_arn
-      managed_termination_protection = "ENABLED"
+      auto_scaling_group_arn = module.asg.asg_arn
+      # If ENABLED, need to enable protect_from_scale_in in asg
+      managed_termination_protection = "DISABLED"
 
       managed_scaling = {
         maximum_scaling_step_size = 5
         minimum_scaling_step_size = 1
         status                    = "ENABLED"
-        target_capacity           = 60
+        target_capacity           = 100 # ECS tries to maintain 60% cluster utilization. If it's seeing higher utilization, it will scale up.
       }
 
       default_capacity_provider_strategy = {
-        weight = 60
-        base   = 20
+        weight = 1
+        base   = 1
       }
     }
   }
@@ -84,9 +75,19 @@ module "ecs" {
   capacity_provider_strategy = {
     "test-app-cp1" = {
       weight = 1
-      base   = 1
+      base   = 2 # Set base to 2 to maintain minimum 2 instances
     }
   }
+
+
+
+  #scaling
+  desired_count         = 2
+  min_capacity          = 2
+  max_capacity          = 4
+  scale_up_adjustment   = var.ecs_scale_up_adjustment
+  scale_down_adjustment = var.ecs_scale_down_adjustment
+  cooldown_period       = var.ecs_cooldown_period
 
   # ECS Role
   ecs_auto_scale_role = module.ecs_auto_scale_role.role_arn

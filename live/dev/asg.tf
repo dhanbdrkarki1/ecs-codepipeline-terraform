@@ -13,7 +13,9 @@ module "asg" {
   vpc_zone_identifier       = module.vpc.public_subnet_ids
   health_check_type         = "ELB"
   health_check_grace_period = 300
-  target_group_arns         = module.alb.target_group_arns
+  # If Load Balanacer Target type is "ip" and ECS service is used, target group arn is defined in ECS Service Definition. 
+  # If Load Balanacer Target type is "instance", then provide the target_group_arns here.
+  # target_group_arns         = module.alb.target_group_arns
 
   # Launch Template
   create_launch_template      = true
@@ -30,6 +32,9 @@ module "asg" {
   instance_type          = "t3.small"
   security_groups        = [module.ecs_sg.security_group_id]
   iam_instance_profile   = module.instance_profile.instance_profile_name # disable if you don't want to use it
+
+  # Required for  managed_termination_protection = "ENABLED" in ECS
+  protect_from_scale_in = false
 
   # Scaling Policy
   create_auto_scaling_policy = true
@@ -95,7 +100,8 @@ module "asg" {
   #   }
   # ]
   custom_tags = {
-    Environment = var.environment
-    Project     = var.project_name
+    Environment      = var.environment
+    Project          = var.project_name
+    AmazonECSManaged = true
   }
 }

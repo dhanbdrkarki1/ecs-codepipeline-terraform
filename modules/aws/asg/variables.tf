@@ -141,6 +141,13 @@ variable "max_size" {
 variable "target_group_arns" {
   type        = map(string)
   description = "A map of target group ARNs"
+  default     = {}
+}
+
+variable "protect_from_scale_in" {
+  description = "Allows setting instance protection. The AutoScaling Group will not select instances with this setting for termination during scale in events."
+  type        = bool
+  default     = false
 }
 
 

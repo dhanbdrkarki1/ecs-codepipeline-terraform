@@ -27,6 +27,7 @@ resource "aws_autoscaling_group" "this" {
   placement_group           = var.placement_group
   health_check_type         = var.health_check_type
   health_check_grace_period = var.health_check_grace_period
+  protect_from_scale_in     = var.protect_from_scale_in
 
   dynamic "instance_refresh" {
     for_each = length(var.instance_refresh) > 0 ? [var.instance_refresh] : []

@@ -80,12 +80,13 @@ resource "aws_ecs_task_definition" "app" {
 
 
 resource "aws_ecs_service" "main" {
-  count                             = var.create ? 1 : 0
-  name                              = "${local.name_prefix}-service"
-  cluster                           = aws_ecs_cluster.main[0].id
-  task_definition                   = aws_ecs_task_definition.app[0].arn
-  desired_count                     = var.desired_count
-  launch_type                       = var.launch_type
+  count           = var.create ? 1 : 0
+  name            = "${local.name_prefix}-service"
+  cluster         = aws_ecs_cluster.main[0].id
+  task_definition = aws_ecs_task_definition.app[0].arn
+  desired_count   = var.desired_count
+  # Remove launch_type completely when using capacity providers
+  # launch_type                       = var.launch_type
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
 
