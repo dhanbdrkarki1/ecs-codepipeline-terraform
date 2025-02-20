@@ -1,13 +1,5 @@
-output "vpc_id" {
-  value = module.vpc.vpc_id
-}
-
-output "alb_arn" {
-  value = module.alb.alb_arn
-}
-
-output "alb_target_group_arns" {
-  value = module.alb.target_group_arns
+output "ecr_repo" {
+  value = try(module.ecr.repository_url, null)
 }
 
 output "load_balancer_dns_name" {

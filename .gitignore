@@ -6,6 +6,7 @@ vendor
 .vscode
 *.tfstate
 *.tfstate.backup
+*.tfstate.lock.info
 *.out
 .terragrunt-cache
 .terraform.lock.hcl
