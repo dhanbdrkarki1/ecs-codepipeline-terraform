@@ -59,13 +59,6 @@ module "asg" {
       target_value              = 10000000 # 10 MB in bytes
       estimated_instance_warmup = 300
     }
-    # "request-count-policy" = {
-    #   policy_type               = "TargetTrackingScaling"
-    #   metric_type               = "ALBRequestCountPerTarget"
-    #   target_value              = 1000
-    #   estimated_instance_warmup = 300
-    #   resource_label            = "app/${module.alb.alb_name}/${module.alb.alb_arn_suffix}/targetgroup/${module.alb.target_group_name}/${module.alb.target_group_arn_suffix}"
-    # }
   }
 
   # Feature to automate rolling updates for an ASG
