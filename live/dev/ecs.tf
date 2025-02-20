@@ -12,7 +12,38 @@ module "ecs" {
     }
   ]
 
-  # Service
+  # Container Definition
+  container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
+  app_image                     = "${module.ecr.repository_url}:latest"
+  # app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
+  # port mapping
+  container_port     = var.ecs_container_port
+  host_port          = 80
+  app_cpu            = var.ecs_app_cpu
+  app_memory         = var.ecs_app_memory
+  aws_region         = data.aws_region.current.name
+  container_name     = var.ecs_container_name
+  ecs_log_group_name = module.ecs_log_group.log_group_name
+  # EFS
+  mount_efs_volume = var.ecs_mount_efs_volume # if true, create efs and security group for efs
+  # efs_file_system_id = module.efs.id 
+  container_path = var.ecs_container_path             # path on the container to mount the host volume at e.g. /app
+  read_only      = var.ecs_read_only_container_volume # read-only access to the volume
+
+
+  # Task Definition
+  ecs_task_family_name     = var.ecs_task_family_name
+  ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
+  network_mode             = "bridge" # Use bridge for EC2 launch type, For Fargate, use "Fargate"
+  requires_compatibilities = ["EC2"]
+  # cpu = <crate variable for overall task definition cpu allocatio>
+  # memory = <crate variable for overall task definition memory allocatio>
+
+
+  # ECS Service
+  desired_count             = 2
+  scheduling_strategy       = "REPLICA"
+  health_check_grace_period = 60
   load_balancer = {
     service = {
       target_group_arn = module.alb.target_group_arns["ec2-instance"]
@@ -20,31 +51,12 @@ module "ecs" {
       container_port   = var.ecs_container_port
     }
   }
-
-
-  security_groups_ids = [module.ecs_sg.security_group_id]
-  subnet_groups_ids   = module.vpc.public_subnet_ids
-
-
-  # Container Definition
-  container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
-  app_image                     = "${module.ecr.repository_url}:latest"
-  # app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
-  # port mapping
-  container_port = var.ecs_container_port
-  host_port      = 80
-
-  app_cpu            = var.ecs_app_cpu
-  app_memory         = var.ecs_app_memory
-  aws_region         = var.aws_region
-  container_name     = var.ecs_container_name
-  ecs_log_group_name = module.ecs_log_group.log_group_name
-
-  # Task Definition
-  ecs_task_family_name     = var.ecs_task_family_name
-  ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
-  requires_compatibilities = ["EC2"]
-  network_mode             = "bridge" # Use bridge for EC2 launch type, For Fargate, use "Fargate"
+  capacity_provider_strategy = {
+    "test-app-cp1" = {
+      weight = 1
+      base   = 2 # Set base to 2 to maintain minimum 2 instances
+    }
+  }
 
   # Cluster capacity providers
   # Capacity provider - autoscaling groups
@@ -70,38 +82,14 @@ module "ecs" {
     }
   }
 
-  capacity_provider_strategy = {
-    "test-app-cp1" = {
-      weight = 1
-      base   = 2 # Set base to 2 to maintain minimum 2 instances
-    }
-  }
-
-
-
-  #scaling
-  desired_count         = 2
+  #AWS App AutoScaling
   min_capacity          = 2
   max_capacity          = 4
   scale_up_adjustment   = var.ecs_scale_up_adjustment
   scale_down_adjustment = var.ecs_scale_down_adjustment
   cooldown_period       = var.ecs_cooldown_period
-
-  # ECS Role
-  ecs_auto_scale_role = module.ecs_auto_scale_role.role_arn
-
-  #S3 bucket -> used to acce
-  # s3_bucket_arn = module.s3.bucket_arn
-
-  container_path = var.ecs_container_path             # path on the container to mount the host volume at e.g. /app
-  read_only      = var.ecs_read_only_container_volume # read-only access to the volume
-
-  # require for health check to pass
-  health_check_grace_period = 60
-
-  # EFS
-  mount_efs_volume = var.ecs_mount_efs_volume # if true, create efs and security group for efs
-  # efs_file_system_id = module.efs.id 
+  ecs_auto_scale_role   = module.ecs_auto_scale_role.role_arn
+  # s3_bucket_arn = module.s3.bucket_arn # bucket used by ecs task
 
   custom_tags = {
     Environment = var.environment

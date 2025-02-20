@@ -90,6 +90,16 @@ resource "aws_ecs_service" "main" {
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
 
+  dynamic "load_balancer" {
+    for_each = { for k, v in var.load_balancer : k => v }
+
+    content {
+      target_group_arn = try(load_balancer.value.target_group_arn, null)
+      elb_name         = try(load_balancer.value.elb_name, null)
+      container_name   = load_balancer.value.container_name
+      container_port   = load_balancer.value.container_port
+    }
+  }
 
   dynamic "capacity_provider_strategy" {
     for_each = local.ecs_capacity_provider_names
@@ -109,17 +119,6 @@ resource "aws_ecs_service" "main" {
       assign_public_ip = network_configuration.value.assign_public_ip
       security_groups  = network_configuration.value.security_groups
       subnets          = network_configuration.value.subnets
-    }
-  }
-
-  dynamic "load_balancer" {
-    for_each = { for k, v in var.load_balancer : k => v }
-
-    content {
-      container_name   = load_balancer.value.container_name
-      container_port   = load_balancer.value.container_port
-      elb_name         = try(load_balancer.value.elb_name, null)
-      target_group_arn = try(load_balancer.value.target_group_arn, null)
     }
   }
 
