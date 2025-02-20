@@ -13,7 +13,7 @@ module "asg" {
   vpc_zone_identifier       = module.vpc.public_subnet_ids
   health_check_type         = "ELB"
   health_check_grace_period = 300
-  target_group_arns         = module.alb.target_group_arns["ip"]
+  target_group_arns         = module.alb.target_group_arns
 
   # Launch Template
   create_launch_template      = true
@@ -25,7 +25,7 @@ module "asg" {
   EOF
   )
   update_default_version = true
-  image_id               = "ami-08ef92cd73f7c76ee"
+  image_id               = "ami-0604f27d956d83a4d"
   key_name               = "dhan-demo"
   instance_type          = "t3.small"
   security_groups        = [module.ecs_sg.security_group_id]
