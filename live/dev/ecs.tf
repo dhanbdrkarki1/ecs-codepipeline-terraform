@@ -27,15 +27,29 @@ module "ecs" {
   subnet_groups_ids   = module.vpc.public_subnet_ids
   target_group        = module.alb.target_group_arns["ip"]
 
-  ecs_task_family_name = var.ecs_task_family_name
-  container_name       = var.ecs_container_name
-  # app_image            = module.ecr.repository_url
-  app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
 
-  container_port          = var.ecs_container_port
-  app_cpu                 = var.ecs_app_cpu
-  app_memory              = var.ecs_app_memory
-  desired_container_count = var.ecs_desired_container_count
+  # Container Definition
+  container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
+  # app_image            = module.ecr.repository_url
+  app_image = "public.ecr.aws/f9n5f1l7/dgs:latest"
+  # port mapping
+  container_port = var.ecs_container_port
+  host_port      = 80
+
+  app_cpu            = var.ecs_app_cpu
+  app_memory         = var.ecs_app_memory
+  aws_region         = var.aws_region
+  container_name     = var.ecs_container_name
+  ecs_log_group_name = module.ecs_log_group.log_group_name
+
+  # Task Definition
+  ecs_task_family_name     = var.ecs_task_family_name
+  ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
+  requires_compatibilities = ["FARGATE"]
+
+
+
+  desired_count = var.ecs_desired_count
 
   #scaling
   min_capacity          = var.ecs_min_capacity
@@ -67,15 +81,8 @@ module "ecs" {
     }
   }
 
-  # ECS Log Group
-  ecs_log_group_name = module.ecs_log_group.log_group_name
-
   # ECS Role
-  ecs_task_execution_role = module.ecs_task_execution_role.role_arn
-  ecs_auto_scale_role     = module.ecs_auto_scale_role.role_arn
-
-  # Container Definition Template
-  container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
+  ecs_auto_scale_role = module.ecs_auto_scale_role.role_arn
 
   #S3 bucket -> used to acce
   # s3_bucket_arn = module.s3.bucket_arn
@@ -85,8 +92,6 @@ module "ecs" {
 
   # require for health check to pass
   health_check_grace_period = var.ecs_health_check_grace_period
-
-  aws_region = var.aws_region
 
   # EFS
   mount_efs_volume = var.ecs_mount_efs_volume # if true, create efs and security group for efs

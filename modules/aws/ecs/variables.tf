@@ -43,11 +43,96 @@ variable "cluster_service_connect_defaults" {
 ##############
 # Service
 ##############
+
+####################
+# Task Definition
+#####################
+variable "create_task_definition" {
+  description = "Determines whether to create a task definition or use existing/provided"
+  type        = bool
+  default     = true
+}
+
+variable "task_definition_arn" {
+  description = "Existing task definition ARN. Required when `create_task_definition` is `false`"
+  type        = string
+  default     = null
+}
+
 variable "network_mode" {
   description = "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`"
   type        = string
   default     = "awsvpc"
 }
+
+variable "requires_compatibilities" {
+  description = "Set of launch types required by the task. The valid values are `EC2` and `FARGATE`"
+  type        = list(string)
+  default     = ["FARGATE"]
+}
+
+
+#---------------------------
+# Container Task Definition
+#---------------------------
+variable "container_name" {
+  description = "The name of the container running ECS tasks"
+  type        = string
+  default     = ""
+}
+
+
+variable "app_image" {
+  description = "Docker image to run in the ECS cluster"
+  type        = string
+  default     = ""
+}
+
+
+variable "container_port" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  type        = number
+  default     = 80
+}
+
+variable "host_port" {
+  description = "Port exposed by the Host Instance like EC2"
+  type        = number
+  default     = 80
+
+}
+
+variable "app_cpu" {
+  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
+  type        = string
+  default     = "256"
+}
+
+variable "app_memory" {
+  description = "Fargate instance memory to provision (in MiB)"
+  type        = string
+  default     = "512"
+}
+
+variable "desired_count" {
+  description = "Number of instances of the task definition to place and keep running."
+  type        = number
+  default     = 2
+}
+
+
+variable "aws_region" {
+  type        = string
+  description = "The AWS region things are created in"
+  default     = "us-east-1"
+}
+
+variable "container_definition_template" {
+  description = "Template file for Container Definition to be used by ECS Service."
+  default     = null
+  type        = string
+}
+
 
 
 
@@ -156,6 +241,11 @@ variable "health_check_grace_period" {
 #######################
 # Capacity Providers
 #######################
+variable "capacity_provider_strategy" {
+  description = "Capacity provider strategies to use for the service. Can be one or more"
+  type        = any
+  default     = {}
+}
 
 variable "default_capacity_provider_use_fargate" {
   description = "Determines whether to use Fargate or autoscaling for default capacity provider strategy"
@@ -304,63 +394,6 @@ variable "scheduling_strategy" {
   description = "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`"
   type        = string
   default     = "REPLICA"
-}
-
-#---------------------------
-# Container Task Definition
-#---------------------------
-
-#container
-variable "container_name" {
-  description = "The name of the container running ECS tasks"
-  type        = string
-  default     = ""
-}
-
-
-variable "app_image" {
-  description = "Docker image to run in the ECS cluster"
-  type        = string
-  default     = ""
-}
-
-
-variable "container_port" {
-  description = "Port exposed by the docker image to redirect traffic to"
-  type        = number
-  default     = 80
-
-}
-
-variable "app_cpu" {
-  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = string
-  default     = "256"
-}
-
-variable "app_memory" {
-  description = "Fargate instance memory to provision (in MiB)"
-  type        = string
-  default     = "512"
-}
-
-variable "desired_container_count" {
-  description = "Number of instances of the task definition to place and keep running."
-  type        = number
-  default     = 2
-}
-
-
-variable "aws_region" {
-  type        = string
-  description = "The AWS region things are created in"
-  default     = "us-east-1"
-}
-
-variable "container_definition_template" {
-  description = "Template file for Container Definition to be used by ECS Service."
-  default     = null
-  type        = string
 }
 
 

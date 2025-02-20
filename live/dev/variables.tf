@@ -72,7 +72,7 @@ variable "ecs_app_memory" {
   default     = "512"
 }
 
-variable "ecs_desired_container_count" {
+variable "ecs_desired_count" {
   description = "Number of instances of the task definition to place and keep running."
   type        = number
   default     = 2

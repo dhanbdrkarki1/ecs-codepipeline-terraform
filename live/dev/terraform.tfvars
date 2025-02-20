@@ -14,11 +14,11 @@ create_ecs           = true
 ecs_name             = "todo-ecs-test"
 ecs_task_family_name = "todo-test"
 
-ecs_container_name          = "todo-test"
-ecs_container_port          = 80
-ecs_app_cpu                 = 256
-ecs_app_memory              = 512
-ecs_desired_container_count = 2
+ecs_container_name = "todo-test"
+ecs_container_port = 80
+ecs_app_cpu        = 256
+ecs_app_memory     = 512
+ecs_desired_count  = 2
 
 ecs_min_capacity          = 2
 ecs_max_capacity          = 4

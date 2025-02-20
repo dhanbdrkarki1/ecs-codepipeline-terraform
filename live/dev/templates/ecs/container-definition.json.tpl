@@ -18,7 +18,8 @@
     "portMappings": [
       {
         "containerPort": ${container_port},
-        "hostPort": ${container_port}
+        "hostPort": ${host_port},
+        "protocol": "tcp"
       }
     ],
     "mountPoints": ${mount_points}

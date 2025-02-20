@@ -24,6 +24,8 @@ locals {
     subnets          = var.subnet_groups_ids
   }
 
+  ecs_capacity_provider_names = [for k, v in aws_ecs_capacity_provider.this : v.name]
+
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
   region     = data.aws_region.current.name

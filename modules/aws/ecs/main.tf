@@ -35,6 +35,7 @@ data "template_file" "container-definition" {
   vars = {
     app_image      = var.app_image
     container_port = var.container_port
+    host_port      = var.host_port
     app_cpu        = var.app_cpu
     app_memory     = var.app_memory
     aws_region     = var.aws_region
@@ -51,8 +52,8 @@ resource "aws_ecs_task_definition" "app" {
   count                    = var.create ? 1 : 0
   family                   = var.ecs_task_family_name
   execution_role_arn       = try(var.ecs_task_execution_role, null)
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  network_mode             = var.network_mode
+  requires_compatibilities = var.requires_compatibilities
   cpu                      = var.app_cpu
   memory                   = var.app_memory
   container_definitions    = element(data.template_file.container-definition.*.rendered, count.index)
@@ -83,10 +84,22 @@ resource "aws_ecs_service" "main" {
   name                              = "${local.name_prefix}-service"
   cluster                           = aws_ecs_cluster.main[0].id
   task_definition                   = aws_ecs_task_definition.app[0].arn
-  desired_count                     = var.desired_container_count
+  desired_count                     = var.desired_count
   launch_type                       = var.launch_type
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
+
+
+  dynamic "capacity_provider_strategy" {
+    for_each = local.ecs_capacity_provider_names
+
+    content {
+      capacity_provider = capacity_provider_strategy.value
+      weight            = try(var.capacity_provider_strategy[capacity_provider_strategy.value].weight, 1)
+      base              = try(var.capacity_provider_strategy[capacity_provider_strategy.value].base, null)
+    }
+  }
+
 
   dynamic "network_configuration" {
     for_each = var.network_mode == "awsvpc" ? [local.network_configuration] : []
@@ -97,26 +110,6 @@ resource "aws_ecs_service" "main" {
       subnets          = network_configuration.value.subnets
     }
   }
-
-  # network_configuration {
-  #   security_groups  = var.security_groups_ids
-  #   subnets          = var.subnet_groups_ids
-  #   assign_public_ip = false
-  # }
-
-  # load_balancer {
-  #   target_group_arn = var.target_group
-  #   container_name   = var.container_name
-  #   container_port   = var.container_port
-  # }
-
-  # deployment_circuit_breaker {
-  #   enable   = var.enable_deployment_circuit_breaker
-  #   rollback = var.enable_deployment_circuit_breaker_rollback
-  # }
-  # deployment_controller {
-  #   type = var.deployment_controller_type
-  # }
 
   dynamic "load_balancer" {
     for_each = { for k, v in var.load_balancer : k => v }
@@ -143,77 +136,6 @@ resource "aws_ecs_service" "main" {
 
     content {
       type = try(deployment_controller.value.type, null)
-    }
-  }
-
-  tags = merge(
-    { "Name" = "${local.name_prefix}" },
-    var.custom_tags
-  )
-}
-
-
-################################################################################
-# Cluster Capacity Providers
-################################################################################
-
-locals {
-  default_capacity_providers = merge(
-    { for k, v in var.fargate_capacity_providers : k => v if var.default_capacity_provider_use_fargate },
-    { for k, v in var.autoscaling_capacity_providers : k => v if !var.default_capacity_provider_use_fargate }
-  )
-}
-
-resource "aws_ecs_cluster_capacity_providers" "this" {
-  count = var.create && length(merge(var.fargate_capacity_providers, var.autoscaling_capacity_providers)) > 0 ? 1 : 0
-
-  cluster_name = aws_ecs_cluster.this[0].name
-  capacity_providers = distinct(concat(
-    [for k, v in var.fargate_capacity_providers : try(v.name, k)],
-    [for k, v in var.autoscaling_capacity_providers : try(v.name, k)]
-  ))
-
-  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html#capacity-providers-considerations
-  dynamic "default_capacity_provider_strategy" {
-    for_each = local.default_capacity_providers
-    iterator = strategy
-
-    content {
-      capacity_provider = try(strategy.value.name, strategy.key)
-      base              = try(strategy.value.default_capacity_provider_strategy.base, null)
-      weight            = try(strategy.value.default_capacity_provider_strategy.weight, null)
-    }
-  }
-
-  depends_on = [
-    aws_ecs_capacity_provider.this
-  ]
-}
-
-################################################################################
-# Capacity Provider - Autoscaling Group(s)
-################################################################################
-
-resource "aws_ecs_capacity_provider" "this" {
-  for_each = { for k, v in var.autoscaling_capacity_providers : k => v if var.create }
-
-  name = try(each.value.name, each.key)
-
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = each.value.auto_scaling_group_arn
-    # When you use managed termination protection, you must also use managed scaling otherwise managed termination protection won't work
-    managed_termination_protection = length(try([each.value.managed_scaling], [])) == 0 ? "DISABLED" : try(each.value.managed_termination_protection, null)
-
-    dynamic "managed_scaling" {
-      for_each = try([each.value.managed_scaling], [])
-
-      content {
-        instance_warmup_period    = try(managed_scaling.value.instance_warmup_period, null)
-        maximum_scaling_step_size = try(managed_scaling.value.maximum_scaling_step_size, null)
-        minimum_scaling_step_size = try(managed_scaling.value.minimum_scaling_step_size, null)
-        status                    = try(managed_scaling.value.status, null)
-        target_capacity           = try(managed_scaling.value.target_capacity, null)
-      }
     }
   }
 
