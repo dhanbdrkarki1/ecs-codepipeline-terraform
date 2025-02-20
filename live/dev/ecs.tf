@@ -22,10 +22,8 @@ module "ecs" {
   }
 
 
-  # launch_type         = "EC2" # Note: Specifying both a launch type and capacity provider strategy is not supported
   security_groups_ids = [module.ecs_sg.security_group_id]
   subnet_groups_ids   = module.vpc.public_subnet_ids
-  # target_group        = module.alb.target_group_arns["ec2-instance"] # no need
 
 
   # Container Definition
