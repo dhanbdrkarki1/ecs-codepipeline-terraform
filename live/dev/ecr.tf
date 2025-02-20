@@ -1,7 +1,7 @@
 module "ecr" {
   source             = "../../modules/aws/ecr"
   create             = true
-  name               = "todo-app-ecr"
+  name               = var.project_name
   image_immutability = "MUTABLE" # Setting value to "MUTABLE" allowS to override image.
   force_delete       = true      # If set to true, will delete the repository even if it contains images.
 

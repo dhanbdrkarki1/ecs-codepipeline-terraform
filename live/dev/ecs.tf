@@ -30,8 +30,8 @@ module "ecs" {
 
   # Container Definition
   container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
-  # app_image            = module.ecr.repository_url
-  app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
+  app_image                     = module.ecr.repository_url
+  # app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
   # port mapping
   container_port = var.ecs_container_port
   host_port      = 80
