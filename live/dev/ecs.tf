@@ -15,7 +15,7 @@ module "ecs" {
   # Service
   load_balancer = {
     service = {
-      target_group_arn = module.alb.target_groups["ip"].arn
+      target_group_arn = module.alb.target_group_arns["ip"]
       container_name   = var.ecs_container_name
       container_port   = var.ecs_container_port
     }
@@ -63,7 +63,7 @@ module "ecs" {
   default_capacity_provider_use_fargate = false
   autoscaling_capacity_providers = {
     # On-demand instances
-    ex_1 = {
+    test-app-cp1 = {
       auto_scaling_group_arn         = module.asg.asg_arn
       managed_termination_protection = "ENABLED"
 
@@ -78,6 +78,13 @@ module "ecs" {
         weight = 60
         base   = 20
       }
+    }
+  }
+
+  capacity_provider_strategy = {
+    "test-app-cp1" = {
+      weight = 1
+      base   = 1
     }
   }
 
