@@ -31,7 +31,7 @@ module "ecs" {
   # Container Definition
   container_definition_template = file("${path.root}/templates/ecs/container-definition.json.tpl")
   # app_image            = module.ecr.repository_url
-  app_image = "public.ecr.aws/f9n5f1l7/dgs:latest"
+  app_image = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
   # port mapping
   container_port = var.ecs_container_port
   host_port      = 80
@@ -67,7 +67,7 @@ module "ecs" {
 
       default_capacity_provider_strategy = {
         weight = 1
-        base   = 1
+        base   = 2 # Match this with your desired minimum
       }
     }
   }
@@ -99,7 +99,7 @@ module "ecs" {
   read_only      = var.ecs_read_only_container_volume # read-only access to the volume
 
   # require for health check to pass
-  health_check_grace_period = var.ecs_health_check_grace_period
+  health_check_grace_period = 60
 
   # EFS
   mount_efs_volume = var.ecs_mount_efs_volume # if true, create efs and security group for efs

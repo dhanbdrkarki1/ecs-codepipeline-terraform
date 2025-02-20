@@ -27,11 +27,19 @@ module "asg" {
   EOF
   )
   update_default_version = true
-  image_id               = "ami-0604f27d956d83a4d"
+  image_id               = local.ecs_ami_id
   key_name               = "dhan-demo"
   instance_type          = "t3.small"
-  security_groups        = [module.ecs_sg.security_group_id]
-  iam_instance_profile   = module.instance_profile.instance_profile_name # disable if you don't want to use it
+  # Remove security_groups from root level
+  # security_groups      = [module.ecs_sg.security_group_id]
+  network_interfaces = [{
+    associate_public_ip_address = true
+    security_groups             = [module.ecs_sg.security_group_id]
+    delete_on_termination       = true
+    device_index                = 0
+  }]
+  iam_instance_profile = module.instance_profile.instance_profile_name # disable if you don't want to use it
+
 
   # Required for  managed_termination_protection = "ENABLED" in ECS
   protect_from_scale_in = false
@@ -102,6 +110,6 @@ module "asg" {
   custom_tags = {
     Environment      = var.environment
     Project          = var.project_name
-    AmazonECSManaged = true
+    AmazonECSManaged = true # Important for ECS to recognize the instance
   }
 }
