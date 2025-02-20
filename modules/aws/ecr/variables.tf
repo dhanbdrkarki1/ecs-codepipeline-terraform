@@ -23,7 +23,7 @@ variable "image_immutability" {
 variable "encryption_type" {
   description = "The type of encryption for ECR"
   type        = string
-  default     = "KMS"
+  default     = "AES256"
 }
 
 variable "force_delete" {
