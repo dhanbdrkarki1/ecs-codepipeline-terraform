@@ -8,31 +8,9 @@ module "alb" {
   vpc_id              = module.vpc.vpc_id
   subnet_groups_ids   = module.vpc.public_subnet_ids
   security_groups_ids = [module.alb_sg.security_group_id]
-  # container_port      = 80 # no need
-  health_check_path = "/"
+  health_check_path   = "/"
 
   target_groups = {
-    # ip = {
-    #   name                              = "todo" # update it.
-    #   protocol                          = "HTTP"
-    #   container_port                    = 80
-    #   target_type                       = "ip"
-    #   deregistration_delay              = 300 # Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused.
-    #   load_balancing_cross_zone_enabled = true
-    #   load_balancing_algorithm_type     = "round_robin" # Determines how the load balancer selects targets when routing requests. 
-
-    #   health_check = {
-    #     enabled             = true
-    #     interval            = 60
-    #     path                = "/"
-    #     port                = "traffic-port"
-    #     healthy_threshold   = 2
-    #     unhealthy_threshold = 2
-    #     timeout             = 30
-    #     protocol            = "HTTP"
-    #     matcher             = "200-399"
-    #   }
-    # }
     ec2-instance = {
       protocol             = "HTTP"
       port                 = 80
@@ -69,9 +47,6 @@ module "alb" {
           actions = [
             {
               type = "forward"
-              # For ECS Target (ip)
-              # target_group_key = "ip"
-
               # for EC2 Target (Instance)
               target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
             }
