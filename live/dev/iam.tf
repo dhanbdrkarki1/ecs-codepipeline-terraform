@@ -22,6 +22,11 @@ module "instance_profile" {
     ]
   })
 
+  role_policies = {
+    ## Required for SSM Session Manager
+    SSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
+
   # ECS Instance Policy
   policy_document = jsonencode({
     Version = "2012-10-17"
