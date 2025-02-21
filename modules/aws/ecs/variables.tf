@@ -133,6 +133,12 @@ variable "container_definition_template" {
   type        = string
 }
 
+variable "container_definitions" {
+  description = "A map of valid [container definitions](http://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html). Please note that you should only provide values that are part of the container definition document"
+  type        = any
+  default     = {}
+}
+
 
 
 

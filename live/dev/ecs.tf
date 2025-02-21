@@ -82,15 +82,6 @@ module "ecs" {
     }
   }
 
-  #AWS App AutoScaling
-  min_capacity          = 2
-  max_capacity          = 4
-  scale_up_adjustment   = var.ecs_scale_up_adjustment
-  scale_down_adjustment = var.ecs_scale_down_adjustment
-  cooldown_period       = var.ecs_cooldown_period
-  ecs_auto_scale_role   = module.ecs_auto_scale_role.role_arn
-  # s3_bucket_arn = module.s3.bucket_arn # bucket used by ecs task
-
   custom_tags = {
     Environment = var.environment
     Project     = var.project_name
