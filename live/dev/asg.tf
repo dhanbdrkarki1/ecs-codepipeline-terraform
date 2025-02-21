@@ -45,7 +45,7 @@ module "asg" {
   protect_from_scale_in = false
 
   # Scaling Policy
-  create_auto_scaling_policy = true
+  create_auto_scaling_policy = false
   auto_scaling_policies = {
     "cpu-policy" = {
       policy_type               = "TargetTrackingScaling"
