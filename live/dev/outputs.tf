@@ -6,9 +6,9 @@ output "load_balancer_dns_name" {
   value = module.alb.load_balancer_dns_name
 }
 
-output "asg_arn" {
-  value = module.asg.asg_arn
-}
+# output "asg_arn" {
+#   value = module.asg.asg_arn
+# }
 
 output "asg_arns" {
   value = {

@@ -84,7 +84,7 @@ resource "aws_ecs_task_definition" "app" {
 resource "aws_ecs_service" "main" {
   count           = var.create_services ? 1 : 0
   name            = "${local.name_prefix}-service"
-  cluster         = aws_ecs_cluster.main[0].id
+  cluster         = try(aws_ecs_cluster.main[0].id, var.cluster_id)
   task_definition = aws_ecs_task_definition.app[0].arn
   desired_count   = var.desired_count
   # Remove launch_type completely when using capacity providers

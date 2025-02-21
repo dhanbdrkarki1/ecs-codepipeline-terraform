@@ -29,6 +29,18 @@ variable "name" {
 ##############
 # Cluster
 ##############
+variable "cluster_id" {
+  description = "The ID of the ECS Cluster"
+  default     = null
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "The Name of the ECS Cluster"
+  default     = null
+  type        = string
+}
+
 variable "cluster_configuration" {
   description = "The execute command configuration for the cluster"
   type        = any

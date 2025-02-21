@@ -1,5 +1,9 @@
-output "ecs_cluster_name" {
+output "cluster_name" {
   value = try(aws_ecs_cluster.main[0].name, null)
+}
+
+output "cluster_id" {
+  value = try(aws_ecs_cluster.main[0].id, null)
 }
 
 output "ecs_service_name" {

@@ -23,7 +23,7 @@
 #   launch_template_description = "Launch Template for ${var.project_name}"
 #   user_data = base64encode(<<-EOF
 #     #!/bin/bash
-#     echo ECS_CLUSTER=${module.ecs.ecs_cluster_name} >> /etc/ecs/ecs.config
+#     echo ECS_CLUSTER=${module.ecs.cluster_name} >> /etc/ecs/ecs.config
 #   EOF
 #   )
 #   update_default_version = true
@@ -129,7 +129,7 @@ module "asgs" {
   launch_template_description = "Launch Template for ${var.project_name}-${each.value.name}"
   user_data = base64encode(<<-EOF
     #!/bin/bash
-    echo ECS_CLUSTER=${module.ecss.ecs_cluster_name} >> /etc/ecs/ecs.config
+    echo ECS_CLUSTER=${module.ecs_cluster.cluster_name} >> /etc/ecs/ecs.config
     echo ECS_CONTAINER_INSTANCE_TAGS={"Service":"${each.value.name}"} >> /etc/ecs/ecs.config
   EOF
   )

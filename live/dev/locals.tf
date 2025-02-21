@@ -36,10 +36,11 @@ locals {
       app_cpu        = 256
       app_memory     = 512
       desired_count  = 2
-      target_group   = module.alb.target_group_arns["nginx"]
+      # target_group   = module.alb.target_group_arns["nginx"]
+      target_group = "nginx"
       capacity_provider = {
         name    = "nginx-cp"
-        asg_arn = module.asgs.asg_arns["nginx"]
+        asg_arn = module.asgs["nginx"].asg_arn
         weight  = 1
         base    = 2
       }
@@ -52,10 +53,11 @@ locals {
       app_cpu        = 256
       app_memory     = 512
       desired_count  = 1
-      target_group   = module.alb.target_group_arns["rep_dashboard"]
+      # target_group   = module.alb.target_group_arns["rep_dashboard"]
+      target_group = "rep_dashboard"
       capacity_provider = {
         name    = "rep-dashboard-cp"
-        asg_arn = module.asgs.asg_arns["rep_dashboard"]
+        asg_arn = module.asgs["rep_dashboard"].asg_arn
         weight  = 1
         base    = 1
       }
