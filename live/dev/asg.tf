@@ -50,13 +50,13 @@ module "asg" {
     "cpu-policy" = {
       policy_type               = "TargetTrackingScaling"
       metric_type               = "ASGAverageCPUUtilization"
-      target_value              = 70
+      target_value              = 85
       estimated_instance_warmup = 300
     }
     "network-in-policy" = {
       policy_type               = "TargetTrackingScaling"
       metric_type               = "ASGAverageNetworkIn"
-      target_value              = 10000000 # 10 MB in bytes
+      target_value              = 100000000 # 100 MB in bytes
       estimated_instance_warmup = 300
     }
   }
@@ -86,10 +86,11 @@ module "asg" {
       ebs = {
         delete_on_termination = true
         encrypted             = true
-        volume_size           = 20
+        volume_size           = 30
         volume_type           = "gp2"
       }
-      }, {
+    },
+    {
       device_name = "/dev/sda1"
       no_device   = 1
       ebs = {
