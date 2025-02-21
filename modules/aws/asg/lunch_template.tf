@@ -55,6 +55,17 @@ resource "aws_launch_template" "this" {
     }
   }
 
+  dynamic "metadata_options" {
+    for_each = var.metadata_options != null ? [var.metadata_options] : []
+    content {
+      http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
+      http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
+      http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
+      http_protocol_ipv6          = lookup(metadata_options.value, "http_protocol_ipv6", null)
+      instance_metadata_tags      = lookup(metadata_options.value, "instance_metadata_tags", null)
+    }
+  }
+
   lifecycle {
     create_before_destroy = true // create new resources before destroy during update
   }

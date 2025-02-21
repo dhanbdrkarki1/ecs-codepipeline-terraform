@@ -107,6 +107,16 @@ variable "launch_template_version" {
   default     = "$Latest"
 }
 
+variable "metadata_options" {
+  description = "Customize the metadata options for the instance"
+  type        = map(string)
+  default = {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
+}
+
 variable "availability_zones" {
   description = "A list of one or more availability zones for the group. Used for EC2-Classic and default subnets when not specified with `vpc_zone_identifier` argument. Conflicts with `vpc_zone_identifier`"
   type        = list(string)
