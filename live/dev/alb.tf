@@ -28,6 +28,44 @@ module "alb" {
         protocol            = "HTTP"
         matcher             = "200-399"
       }
+    },
+    nginx = {
+      name                 = "nginx-tg"
+      protocol             = "HTTP"
+      port                 = 80
+      target_type          = "instance"
+      deregistration_delay = 10
+
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    },
+    rep_dashboard = {
+      name                 = "rep-dashboard-tg"
+      protocol             = "HTTP"
+      port                 = 80
+      target_type          = "instance"
+      deregistration_delay = 10
+
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
     }
   }
 
@@ -51,17 +89,45 @@ module "alb" {
               target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
             }
           ]
-          # http://nginx.karkidhan.com.np/
           conditions = [{
             host_header = {
               values = ["nginx.karkidhan.com.np"]
             }
           }]
+          # Default condition
           # conditions = [{
           #   path_pattern = {
           #     values = ["*"]
           #   }
           # }]
+        },
+        nginx = {
+          priority = 200
+          actions = [
+            {
+              type             = "forward"
+              target_group_arn = try(module.alb.target_group_arns["nginx"], null)
+            }
+          ]
+          conditions = [{
+            host_header = {
+              values = ["test-nginx.karkidhan.com.np"]
+            }
+          }]
+        },
+        rep_dashboard = {
+          priority = 300
+          actions = [
+            {
+              type             = "forward"
+              target_group_arn = try(module.alb.target_group_arns["rep_dashboard"], null)
+            }
+          ]
+          conditions = [{
+            host_header = {
+              values = ["rep-dashboard.karkidhan.com.np"]
+            }
+          }]
         }
       }
     }
