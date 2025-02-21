@@ -39,7 +39,29 @@ module "asg" {
     device_index                = 0
   }]
   iam_instance_profile = module.instance_profile.instance_profile_name # disable if you don't want to use it
-
+  block_device_mappings = [
+    {
+      # Root volume
+      device_name = "/dev/xvda"
+      no_device   = 0
+      ebs = {
+        delete_on_termination = true
+        encrypted             = true
+        volume_size           = 30
+        volume_type           = "gp3"
+      }
+    },
+    # {
+    #   device_name = "/dev/sda1"
+    #   no_device   = 1
+    #   ebs = {
+    #     delete_on_termination = true
+    #     encrypted             = true
+    #     volume_size           = 30
+    #     volume_type           = "gp3"
+    #   }
+    # }
+  ]
 
   # Required for  managed_termination_protection = "ENABLED" in ECS
   protect_from_scale_in = false
@@ -78,29 +100,6 @@ module "asg" {
     triggers = [] # List of triggers to use for instance refresh. Default: Launch Template
   }
 
-  block_device_mappings = [
-    {
-      # Root volume
-      device_name = "/dev/xvda"
-      no_device   = 0
-      ebs = {
-        delete_on_termination = true
-        encrypted             = true
-        volume_size           = 30
-        volume_type           = "gp3"
-      }
-    },
-    # {
-    #   device_name = "/dev/sda1"
-    #   no_device   = 1
-    #   ebs = {
-    #     delete_on_termination = true
-    #     encrypted             = true
-    #     volume_size           = 30
-    #     volume_type           = "gp3"
-    #   }
-    # }
-  ]
   custom_tags = {
     Environment      = var.environment
     Project          = var.project_name
