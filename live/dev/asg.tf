@@ -108,27 +108,6 @@ module "asg" {
 }
 
 
-locals {
-  asg_services = {
-    "nginx" = {
-      name             = "nginx"
-      instance_type    = "t3.small"
-      min_size         = 2
-      desired_capacity = 2
-      max_size         = 4
-      volume_size      = 30
-    },
-    "rep_dashboard" = {
-      name             = "service2"
-      instance_type    = "t3.medium"
-      min_size         = 1
-      desired_capacity = 1
-      max_size         = 3
-      volume_size      = 50
-    }
-  }
-}
-
 module "asgs" {
   source   = "../../modules/aws/asg"
   for_each = local.asg_services
