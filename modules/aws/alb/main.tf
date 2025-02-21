@@ -117,6 +117,21 @@ resource "aws_lb_listener_rule" "this" {
     }
   }
 
+  # Host Header
+  dynamic "condition" {
+    for_each = [for condition in each.value.conditions : condition if contains(keys(condition), "host_header")]
+
+    content {
+      dynamic "host_header" {
+        for_each = try([condition.value.host_header], [])
+
+        content {
+          values = host_header.value.values
+        }
+      }
+    }
+  }
+
   dynamic "action" {
     for_each = [for action in each.value.actions : action if action.type == "forward"]
 

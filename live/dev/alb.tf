@@ -51,12 +51,17 @@ module "alb" {
               target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
             }
           ]
-
+          # http://nginx.karkidhan.com.np/
           conditions = [{
-            path_pattern = {
-              values = ["*"]
+            host_header = {
+              values = ["nginx.karkidhan.com.np"]
             }
           }]
+          # conditions = [{
+          #   path_pattern = {
+          #     values = ["*"]
+          #   }
+          # }]
         }
       }
     }
