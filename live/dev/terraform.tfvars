@@ -3,7 +3,7 @@
 #================================
 project_name       = "dhan-custom"
 aws_region         = "us-east-2"
-availability_zones = ["us-east-2a", "us-east-2b"]
+availability_zones = ["us-east-2a"]
 environment        = "dev"
 
 
@@ -11,10 +11,10 @@ environment        = "dev"
 # Elastic Container Service (ECS)
 #================================
 create_ecs           = true
-ecs_name             = "todo-ecs-test"
-ecs_task_family_name = "todo-test"
+ecs_name             = "ecs-app"
+ecs_task_family_name = "ecs-app"
 
-ecs_container_name = "todo-test"
+ecs_container_name = "ecs-app"
 ecs_container_port = 80
 ecs_app_cpu        = 256
 ecs_app_memory     = 512
