@@ -10,7 +10,7 @@ locals {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this" {
-  count = var.create && length(merge(var.fargate_capacity_providers, var.autoscaling_capacity_providers)) > 0 ? 1 : 0
+  count = var.create_services && length(merge(var.fargate_capacity_providers, var.autoscaling_capacity_providers)) > 0 ? 1 : 0
 
   cluster_name = aws_ecs_cluster.main[0].name
   capacity_providers = distinct(concat(
@@ -40,7 +40,7 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 ################################################################################
 
 resource "aws_ecs_capacity_provider" "this" {
-  for_each = { for k, v in var.autoscaling_capacity_providers : k => v if var.create }
+  for_each = { for k, v in var.autoscaling_capacity_providers : k => v if var.create_services }
 
   name = try(each.value.name, each.key)
 

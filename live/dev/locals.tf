@@ -22,4 +22,44 @@ locals {
       volume_size      = 50
     }
   }
+  # Target Groups
+
+  # Listener Rules
+
+  # ECS Services
+  ecs_services = {
+    nginx = {
+      container_name = "nginx"
+      container_port = 80
+      host_port      = 80
+      app_image      = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
+      app_cpu        = 256
+      app_memory     = 512
+      desired_count  = 2
+      target_group   = module.alb.target_group_arns["nginx"]
+      capacity_provider = {
+        name    = "nginx-cp"
+        asg_arn = module.asgs.asg_arns["nginx"]
+        weight  = 1
+        base    = 2
+      }
+    }
+    rep_dashboard = {
+      container_name = "rep-dashboard"
+      container_port = 80
+      host_port      = 80
+      app_image      = "public.ecr.aws/e1z1p8n3/dhan/rep-dashboard:latest"
+      app_cpu        = 256
+      app_memory     = 512
+      desired_count  = 1
+      target_group   = module.alb.target_group_arns["rep_dashboard"]
+      capacity_provider = {
+        name    = "rep-dashboard-cp"
+        asg_arn = module.asgs.asg_arns["rep_dashboard"]
+        weight  = 1
+        base    = 1
+      }
+    }
+  }
 }
+

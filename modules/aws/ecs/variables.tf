@@ -2,10 +2,22 @@
 # ECS
 #########
 
-variable "create" {
+# variable "create" {
+#   default     = false
+#   type        = bool
+#   description = "Specify whether to create resource or not"
+# }
+
+variable "create_cluster" {
   default     = false
   type        = bool
-  description = "Specify whether to create resource or not"
+  description = "Specify whether to create ECS cluster or not"
+}
+
+variable "create_services" {
+  default     = false
+  type        = bool
+  description = "Specify whether to create ECS service or not"
 }
 
 variable "name" {

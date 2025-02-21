@@ -1,8 +1,9 @@
 #########
 # ECS
 #########
+# ECS Cluster
 resource "aws_ecs_cluster" "main" {
-  count = var.create ? 1 : 0
+  count = var.create_cluster ? 1 : 0
   name  = local.name_prefix
 
   dynamic "service_connect_defaults" {
@@ -29,8 +30,9 @@ resource "aws_ecs_cluster" "main" {
   )
 }
 
+# ECS Services
 data "template_file" "container-definition" {
-  count    = var.create ? 1 : 0
+  count    = var.create_services ? 1 : 0
   template = var.container_definition_template
   vars = {
     app_image      = var.app_image
@@ -47,9 +49,9 @@ data "template_file" "container-definition" {
   }
 }
 
-
+# Task Definition
 resource "aws_ecs_task_definition" "app" {
-  count                    = var.create ? 1 : 0
+  count                    = var.create_services ? 1 : 0
   family                   = var.ecs_task_family_name
   execution_role_arn       = try(var.ecs_task_execution_role, null)
   network_mode             = var.network_mode
@@ -78,9 +80,9 @@ resource "aws_ecs_task_definition" "app" {
   )
 }
 
-
+# ECS Service
 resource "aws_ecs_service" "main" {
-  count           = var.create ? 1 : 0
+  count           = var.create_services ? 1 : 0
   name            = "${local.name_prefix}-service"
   cluster         = aws_ecs_cluster.main[0].id
   task_definition = aws_ecs_task_definition.app[0].arn
