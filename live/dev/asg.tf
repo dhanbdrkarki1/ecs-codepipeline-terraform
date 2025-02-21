@@ -78,28 +78,28 @@ module "asg" {
     triggers = [] # List of triggers to use for instance refresh. Default: Launch Template
   }
 
-  # block_device_mappings = [
-  #   {
-  #     # Root volume
-  #     device_name = "/dev/xvda"
-  #     no_device   = 0
-  #     ebs = {
-  #       delete_on_termination = true
-  #       encrypted             = true
-  #       volume_size           = 20
-  #       volume_type           = "gp2"
-  #     }
-  #     }, {
-  #     device_name = "/dev/sda1"
-  #     no_device   = 1
-  #     ebs = {
-  #       delete_on_termination = true
-  #       encrypted             = true
-  #       volume_size           = 30
-  #       volume_type           = "gp2"
-  #     }
-  #   }
-  # ]
+  block_device_mappings = [
+    {
+      # Root volume
+      device_name = "/dev/xvda"
+      no_device   = 0
+      ebs = {
+        delete_on_termination = true
+        encrypted             = true
+        volume_size           = 20
+        volume_type           = "gp2"
+      }
+      }, {
+      device_name = "/dev/sda1"
+      no_device   = 1
+      ebs = {
+        delete_on_termination = true
+        encrypted             = true
+        volume_size           = 30
+        volume_type           = "gp2"
+      }
+    }
+  ]
   custom_tags = {
     Environment      = var.environment
     Project          = var.project_name
