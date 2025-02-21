@@ -87,19 +87,19 @@ module "asg" {
         delete_on_termination = true
         encrypted             = true
         volume_size           = 30
-        volume_type           = "gp2"
+        volume_type           = "gp3"
       }
     },
-    {
-      device_name = "/dev/sda1"
-      no_device   = 1
-      ebs = {
-        delete_on_termination = true
-        encrypted             = true
-        volume_size           = 30
-        volume_type           = "gp2"
-      }
-    }
+    # {
+    #   device_name = "/dev/sda1"
+    #   no_device   = 1
+    #   ebs = {
+    #     delete_on_termination = true
+    #     encrypted             = true
+    #     volume_size           = 30
+    #     volume_type           = "gp3"
+    #   }
+    # }
   ]
   custom_tags = {
     Environment      = var.environment
