@@ -130,9 +130,12 @@ module "asgs" {
   user_data = base64encode(<<-EOF
     #!/bin/bash
     echo ECS_CLUSTER=${module.ecs_cluster.cluster_name} >> /etc/ecs/ecs.config
-    echo ECS_CONTAINER_INSTANCE_TAGS={"Service":"${each.value.name}"} >> /etc/ecs/ecs.config
+    echo ECS_ENABLE_TASK_IAM_ROLE=true >> /etc/ecs/ecs.config
+    echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config
   EOF
   )
+  # add it in user_data
+  # echo ECS_CONTAINER_INSTANCE_TAGS={"Service":"${each.value.name}"} >> /etc/ecs/ecs.config
   update_default_version = true
   image_id               = local.ecs_ami_id
   key_name               = "dhan-demo"
