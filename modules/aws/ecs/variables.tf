@@ -1,13 +1,6 @@
 #########
 # ECS
 #########
-
-# variable "create" {
-#   default     = false
-#   type        = bool
-#   description = "Specify whether to create resource or not"
-# }
-
 variable "create_cluster" {
   default     = false
   type        = bool
@@ -126,13 +119,13 @@ variable "host_port" {
 
 }
 
-variable "app_cpu" {
+variable "cpu" {
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = string
   default     = "256"
 }
 
-variable "app_memory" {
+variable "memory" {
   description = "Fargate instance memory to provision (in MiB)"
   type        = string
   default     = "512"
@@ -158,7 +151,7 @@ variable "container_definition_template" {
 }
 
 variable "container_definitions" {
-  description = "A map of valid [container definitions](http://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html). Please note that you should only provide values that are part of the container definition document"
+  description = "A map of container definitions for the ECS service"
   type        = any
   default     = {}
 }

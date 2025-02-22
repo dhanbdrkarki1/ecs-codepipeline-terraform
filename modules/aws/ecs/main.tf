@@ -30,25 +30,6 @@ resource "aws_ecs_cluster" "main" {
   )
 }
 
-# ECS Services
-data "template_file" "container-definition" {
-  count    = var.create_services ? 1 : 0
-  template = var.container_definition_template
-  vars = {
-    app_image      = var.app_image
-    container_port = var.container_port
-    host_port      = var.host_port
-    app_cpu        = var.app_cpu
-    app_memory     = var.app_memory
-    aws_region     = var.aws_region
-    container_name = var.container_name
-    log_group_name = var.ecs_log_group_name
-
-    # volume mount
-    mount_points = local.mount_points
-  }
-}
-
 # Task Definition
 resource "aws_ecs_task_definition" "app" {
   count                    = var.create_services ? 1 : 0
@@ -56,9 +37,9 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = try(var.ecs_task_execution_role, null)
   network_mode             = var.network_mode
   requires_compatibilities = var.requires_compatibilities
-  cpu                      = var.app_cpu
-  memory                   = var.app_memory
-  container_definitions    = element(data.template_file.container-definition.*.rendered, count.index)
+  cpu                      = var.cpu
+  memory                   = var.memory
+  container_definitions    = var.container_definitions
 
   dynamic "volume" {
     for_each = var.mount_efs_volume ? [1] : []

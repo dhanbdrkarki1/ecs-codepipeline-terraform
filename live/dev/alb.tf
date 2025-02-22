@@ -80,27 +80,6 @@ module "alb" {
       }
 
       rules = {
-        fixed-response = {
-          priority = 100
-          actions = [
-            {
-              type = "forward"
-              # for EC2 Target (Instance)
-              target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
-            }
-          ]
-          conditions = [{
-            host_header = {
-              values = ["nginx.karkidhan.com.np"]
-            }
-          }]
-          # Default condition
-          # conditions = [{
-          #   path_pattern = {
-          #     values = ["*"]
-          #   }
-          # }]
-        },
         nginx = {
           priority = 200
           actions = [
