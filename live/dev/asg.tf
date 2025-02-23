@@ -6,7 +6,7 @@ module "asgs" {
   for_each = local.asg_services
 
   create = true
-  name   = "${var.project_name}-${each.value.name}"
+  name   = each.value.name
 
   # Auto Scaling
   min_size                  = each.value.min_size
