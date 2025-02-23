@@ -18,8 +18,8 @@ locals {
     rep-dashboard = {
       name             = "rep-dashboard"
       instance_type    = "t3.medium" // t3.medium has 4 GiB total memory 
-      min_size         = 1
-      desired_capacity = 1
+      min_size         = 2
+      desired_capacity = 2
       max_size         = 3
       volume_size      = 50
     }
@@ -121,13 +121,11 @@ locals {
   log_groups = {
     # Dashboard
     group-dashboard = {
-      name_prefix       = "/ecs/service/"
-      name              = "group-dashboard"
+      name              = "/ecs/service/group-dashboard"
       retention_in_days = 30
     }
     rep-dashboard = {
-      name_prefix       = "/ecs/service/"
-      name              = "rep-dashboard"
+      name              = "/ecs/service/rep-dashboard"
       retention_in_days = 30
     }
   }
@@ -138,9 +136,10 @@ locals {
   # ECS Services
   ecs_services = {
     group-dashboard = {
-      desired_count = 2
-      cpu           = 1024
-      memory        = 2048 // Reduce to 2 GiB per task
+      desired_count     = 2
+      cpu               = 1024
+      memory            = 2048 // Reduce to 2 GiB per task
+      memoryReservation = 256
 
       # Container definition(s)
       container_definitions = [
@@ -169,7 +168,6 @@ locals {
               "awslogs-stream-prefix" = "group-dashboard"
             }
           }
-          memoryReservation = 100
         }
       ]
       container_name = "group-dashboard"
@@ -179,13 +177,14 @@ locals {
         name    = "group-dashboard-cp"
         asg_arn = module.asgs["group-dashboard"].asg_arn
         weight  = 1
-        base    = 2
+        base    = 1
       }
     }
     rep-dashboard = {
-      desired_count = 2
-      cpu           = 1024 // 1 vCPU
-      memory        = 2048 // 2 GiB for task
+      desired_count     = 2
+      cpu               = 1024 // 1 vCPU
+      memory            = 1536 // 1.5 GiB instead of 2 GiB
+      memoryReservation = 256
 
       container_definitions = [
         {
@@ -213,7 +212,6 @@ locals {
               "awslogs-stream-prefix" = "rep-dashboard"
             }
           }
-          memoryReservation = 100
         }
       ]
       container_name = "rep-dashboard"
@@ -222,7 +220,7 @@ locals {
       capacity_provider = {
         name    = "rep-dashboard-cp"
         asg_arn = module.asgs["rep-dashboard"].asg_arn
-        weight  = 1
+        weight  = 100
         base    = 1
       }
     }

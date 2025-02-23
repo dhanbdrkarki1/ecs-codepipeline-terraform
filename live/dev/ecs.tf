@@ -73,10 +73,10 @@ module "ecs_services" {
       auto_scaling_group_arn         = each.value.capacity_provider.asg_arn
       managed_termination_protection = "DISABLED"
       managed_scaling = {
-        maximum_scaling_step_size = 5
-        minimum_scaling_step_size = 1
+        minimum_scaling_step_size = 1 # Minimum number of instances to scale in/out
+        maximum_scaling_step_size = 2 # Maximum number of instances to scale in/out
         status                    = "ENABLED"
-        target_capacity           = 100
+        target_capacity           = 85 # Percentage of resource utilization target (uses 80% instance resources and maintains 15% buffer)
       }
       default_capacity_provider_strategy = {
         weight = each.value.capacity_provider.weight
