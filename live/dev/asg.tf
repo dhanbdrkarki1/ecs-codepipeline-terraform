@@ -31,7 +31,6 @@ module "asgs" {
   # echo ECS_CONTAINER_INSTANCE_TAGS={"Service":"${each.value.name}"} >> /etc/ecs/ecs.config
   update_default_version = true
   image_id               = local.ecs_ami_id
-  key_name               = "dhan-demo"
   instance_type          = each.value.instance_type
 
   network_interfaces = [{

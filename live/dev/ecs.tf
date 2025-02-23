@@ -22,7 +22,7 @@ module "ecs_services" {
   source          = "../../modules/aws/ecs"
   for_each        = local.ecs_services
   create_services = true
-  name            = "${var.project_name}-${each.key}"
+  name            = each.key
 
   cluster_id   = module.ecs_cluster.cluster_id
   cluster_name = module.ecs_cluster.cluster_name
