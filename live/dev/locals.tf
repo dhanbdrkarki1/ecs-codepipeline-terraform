@@ -10,16 +10,16 @@ locals {
     group-dashboard = {
       name             = "group-dashboard"
       instance_type    = "t3.large" # "t3.large" has 8 GiB memory
-      min_size         = 2
-      desired_capacity = 2
+      min_size         = 1
+      desired_capacity = 1
       max_size         = 4
       volume_size      = 30
     }
     rep-dashboard = {
       name             = "rep-dashboard"
       instance_type    = "t3.medium" // t3.medium has 4 GiB total memory 
-      min_size         = 2
-      desired_capacity = 2
+      min_size         = 1
+      desired_capacity = 1
       max_size         = 3
       volume_size      = 50
     }
