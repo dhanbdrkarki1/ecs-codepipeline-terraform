@@ -3,7 +3,9 @@ locals {
   account_id = "664418970145"
   ecs_ami_id = jsondecode(data.aws_ssm_parameter.ecs_optimized_ami.value)["image_id"]
 
-  # ASG Services
+  ###########################
+  # Auto Scaling Groups
+  ###########################
   asg_services = {
     "nginx" = {
       name             = "nginx"
@@ -22,10 +24,118 @@ locals {
       volume_size      = 50
     }
   }
+
+  ###########################
+  # Application Load Balancer
+  ###########################
+
   # Target Groups
+  alb_target_groups = {
+    ec2-instance = {
+      protocol             = "HTTP"
+      port                 = 80
+      target_type          = "instance"
+      deregistration_delay = 10
+
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    },
+    nginx = {
+      name                 = "nginx-tg"
+      protocol             = "HTTP"
+      port                 = 80
+      target_type          = "instance"
+      deregistration_delay = 10
+
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    },
+    rep_dashboard = {
+      name                 = "rep-dashboard-tg"
+      protocol             = "HTTP"
+      port                 = 80
+      target_type          = "instance"
+      deregistration_delay = 10
+
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    }
+  }
 
   # Listener Rules
+  alb_listeners = {
+    fixed-response = {
+      port     = 80
+      protocol = "HTTP"
+      fixed_response = {
+        content_type = "text/plain"
+        message_body = "404: page not found"
+        status_code  = "404"
+      }
 
+      rules = {
+        nginx = {
+          priority = 200
+          actions = [
+            {
+              type             = "forward"
+              target_group_arn = try(module.alb.target_group_arns["nginx"], null)
+            }
+          ]
+          conditions = [{
+            host_header = {
+              values = ["test-nginx.karkidhan.com.np"]
+            }
+          }]
+        },
+        rep_dashboard = {
+          priority = 300
+          actions = [
+            {
+              type             = "forward"
+              target_group_arn = try(module.alb.target_group_arns["rep_dashboard"], null)
+            }
+          ]
+          conditions = [{
+            host_header = {
+              values = ["rep-dashboard.karkidhan.com.np"]
+            }
+          }]
+        }
+      }
+    }
+  }
+
+  ###########################
+  # ECS
+  ###########################
   # ECS Services
   ecs_services = {
     nginx = {
