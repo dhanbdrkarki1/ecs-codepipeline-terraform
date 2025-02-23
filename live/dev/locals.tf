@@ -7,15 +7,15 @@ locals {
   # Auto Scaling Groups
   ###########################
   asg_services = {
-    "nginx" = {
-      name             = "nginx"
+    group-dashboard = {
+      name             = "group-dashboard"
       instance_type    = "t3.large" # "t3.large" has 8 GiB memory
       min_size         = 2
       desired_capacity = 2
       max_size         = 4
       volume_size      = 30
-    },
-    "rep_dashboard" = {
+    }
+    rep-dashboard = {
       name             = "rep-dashboard"
       instance_type    = "t3.medium" // t3.medium has 4 GiB total memory 
       min_size         = 1
@@ -31,7 +31,8 @@ locals {
 
   # Target Groups
   alb_target_groups = {
-    ec2-instance = {
+    group-dashboard = {
+      name                 = "group-dashboard-tg"
       protocol             = "HTTP"
       port                 = 80
       target_type          = "instance"
@@ -49,26 +50,7 @@ locals {
         matcher             = "200-399"
       }
     },
-    nginx = {
-      name                 = "nginx-tg"
-      protocol             = "HTTP"
-      port                 = 80
-      target_type          = "instance"
-      deregistration_delay = 10
-
-      health_check = {
-        enabled             = true
-        interval            = 60
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 2
-        unhealthy_threshold = 2
-        timeout             = 30
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
-    },
-    rep_dashboard = {
+    rep-dashboard = {
       name                 = "rep-dashboard-tg"
       protocol             = "HTTP"
       port                 = 80
@@ -101,12 +83,12 @@ locals {
       }
 
       rules = {
-        nginx = {
+        group-dashboard = {
           priority = 200
           actions = [
             {
               type             = "forward"
-              target_group_arn = try(module.alb.target_group_arns["nginx"], null)
+              target_group_arn = try(module.alb.target_group_arns["group-dashboard"], null)
             }
           ]
           conditions = [{
@@ -115,12 +97,12 @@ locals {
             }
           }]
         },
-        rep_dashboard = {
+        rep-dashboard = {
           priority = 300
           actions = [
             {
               type             = "forward"
-              target_group_arn = try(module.alb.target_group_arns["rep_dashboard"], null)
+              target_group_arn = try(module.alb.target_group_arns["rep-dashboard"], null)
             }
           ]
           conditions = [{
@@ -134,11 +116,28 @@ locals {
   }
 
   ###########################
+  # Cloudwatch Log Groups
+  ###########################
+  log_groups = {
+    # Dashboard
+    group-dashboard = {
+      name_prefix       = "/ecs/service/"
+      name              = "group-dashboard"
+      retention_in_days = 30
+    }
+    rep-dashboard = {
+      name_prefix       = "/ecs/service/"
+      name              = "rep-dashboard"
+      retention_in_days = 30
+    }
+  }
+
+  ###########################
   # ECS
   ###########################
   # ECS Services
   ecs_services = {
-    nginx = {
+    group-dashboard = {
       desired_count = 2
       cpu           = 1024
       memory        = 2048 // Reduce to 2 GiB per task
@@ -146,11 +145,11 @@ locals {
       # Container definition(s)
       container_definitions = [
         {
-          name      = "nginx"
+          name      = "group-dashboard"
           cpu       = 256
           memory    = 512
           essential = true
-          image     = "public.ecr.aws/nginx/nginx:1.27-alpine3.21-slim"
+          image     = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
           # healthCheck = { # Changed from health_check to healthCheck
           #   command = ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
           # }
@@ -165,25 +164,25 @@ locals {
           logConfiguration = {
             logDriver = "awslogs"
             options = {
-              "awslogs-group"         = module.ecs_log_group.log_group_name
+              "awslogs-group"         = module.cloudwatch_log_groups["group-dashboard"].log_group_name
               "awslogs-region"        = data.aws_region.current.name
-              "awslogs-stream-prefix" = "nginx"
+              "awslogs-stream-prefix" = "group-dashboard"
             }
           }
           memoryReservation = 100
         }
       ]
-      container_name = "nginx"
+      container_name = "group-dashboard"
       container_port = 80
-      target_group   = "nginx"
+      target_group   = "group-dashboard"
       capacity_provider = {
-        name    = "nginx-cp"
-        asg_arn = module.asgs["nginx"].asg_arn
+        name    = "group-dashboard-cp"
+        asg_arn = module.asgs["group-dashboard"].asg_arn
         weight  = 1
         base    = 2
       }
     }
-    rep_dashboard = {
+    rep-dashboard = {
       desired_count = 2
       cpu           = 1024 // 1 vCPU
       memory        = 2048 // 2 GiB for task
@@ -209,7 +208,7 @@ locals {
           logConfiguration = {
             logDriver = "awslogs"
             options = {
-              "awslogs-group"         = module.ecs_log_group.log_group_name
+              "awslogs-group"         = module.cloudwatch_log_groups["rep-dashboard"].log_group_name
               "awslogs-region"        = data.aws_region.current.name
               "awslogs-stream-prefix" = "rep-dashboard"
             }
@@ -219,10 +218,10 @@ locals {
       ]
       container_name = "rep-dashboard"
       container_port = 80
-      target_group   = "rep_dashboard"
+      target_group   = "rep-dashboard"
       capacity_provider = {
         name    = "rep-dashboard-cp"
-        asg_arn = module.asgs["rep_dashboard"].asg_arn
+        asg_arn = module.asgs["rep-dashboard"].asg_arn
         weight  = 1
         base    = 1
       }

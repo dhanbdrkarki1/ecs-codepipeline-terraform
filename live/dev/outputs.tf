@@ -12,6 +12,18 @@ output "asg_arns" {
   }
 }
 
+# Cloudwatch Log groups
+output "log_group_arns" {
+  value = {
+    for k, v in module.cloudwatch_log_groups : k => v.log_group_arn
+  }
+}
+
+output "log_group_names" {
+  value = {
+    for k, v in module.cloudwatch_log_groups : k => v.log_group_name
+  }
+}
 
 # output "database_endpoint" {
 #   value = module.database.db_instance_address
