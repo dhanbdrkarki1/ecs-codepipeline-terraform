@@ -14,7 +14,7 @@ variable "name" {
 variable "compute_platform" {
   type        = string
   default     = "Server"
-  description = "The compute platform can either be ECS, Lambda, or Server."
+  description = "The compute platform can either be ECS, Lambda, or Server. Default is Server."
 }
 
 # Deployment Group
