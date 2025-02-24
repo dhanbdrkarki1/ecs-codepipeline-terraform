@@ -2,7 +2,7 @@
 module "ecs_cluster" {
   source         = "../../modules/aws/ecs"
   create_cluster = true
-  name           = var.ecs_name
+  name           = "ecs"
 
   cluster_settings = [
     {
@@ -40,9 +40,9 @@ module "ecs_services" {
   requires_compatibilities = ["EC2"]
 
   # EFS settings (if needed)
-  mount_efs_volume = var.ecs_mount_efs_volume
-  container_path   = var.ecs_container_path
-  read_only        = var.ecs_read_only_container_volume
+  mount_efs_volume = false
+  container_path   = "/"   # path on the container to mount the host volume at e.g. /app
+  read_only        = false # read-only access to the volume
 
   # ECS Service
   desired_count             = each.value.desired_count

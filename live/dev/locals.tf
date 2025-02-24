@@ -92,7 +92,7 @@ locals {
           ]
           conditions = [{
             host_header = {
-              values = ["test-nginx.karkidhan.com.np"]
+              values = ["group-dashboard.karkidhan.com.np"]
             }
           }]
         }

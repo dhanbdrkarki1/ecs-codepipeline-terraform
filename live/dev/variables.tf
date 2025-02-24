@@ -23,12 +23,6 @@ variable "availability_zones" {
 #================================
 # ECS
 #================================
-variable "ecs_name" {
-  description = "Name to be used on ECS cluster created"
-  type        = string
-  default     = ""
-}
-
 variable "ecs_mount_efs_volume" {
   type        = bool
   default     = false
