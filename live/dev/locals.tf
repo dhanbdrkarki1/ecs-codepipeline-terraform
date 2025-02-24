@@ -168,7 +168,11 @@ locals {
           essential = true
           image     = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
           # healthCheck = { # Changed from health_check to healthCheck
-          #   command = ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+          #   command     = ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+          #   interval    = 30
+          #   timeout     = 5
+          #   retries     = 3
+          #   startPeriod = 60 # Give enough time for application to start
           # }
           portMappings = [
             {
