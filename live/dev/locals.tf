@@ -70,9 +70,9 @@ locals {
     }
   }
 
-  # Listener Rules
+  # Listener Rules (Blue)
   alb_listeners = {
-    # HTTPS
+    # HTTPS Production Listener
     https = {
       port            = 443
       protocol        = "HTTPS"
@@ -83,9 +83,7 @@ locals {
         message_body = "404: page not found"
         status_code  = "404"
       }
-
       rules = {
-        # Group Dashboard
         group-dashboard = {
           priority = 100
           actions = [
@@ -100,9 +98,23 @@ locals {
             }
           }]
         }
-        # Group Dashboard - Green
+      }
+    }
+
+    # HTTPS Test Listener (Green)
+    https-test = {
+      port            = 8443 # Different port for test traffic
+      protocol        = "HTTPS"
+      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      certificate_arn = module.acm.certificate_arn
+      fixed_response = {
+        content_type = "text/plain"
+        message_body = "404: page not found"
+        status_code  = "404"
+      }
+      rules = {
         group-dashboard-green = {
-          priority = 200
+          priority = 100
           actions = [
             {
               type             = "forward"
@@ -111,13 +123,14 @@ locals {
           ]
           conditions = [{
             host_header = {
-              values = ["group-dashboard.karkidhan.com.np"]
+              values = ["test-group-dashboard.karkidhan.com.np"]
             }
           }]
         }
       }
     }
   }
+
 
   # Redirect http to https
   http-to-https = {
@@ -246,19 +259,19 @@ locals {
     target_group_pair_info = {
       # Production Listener
       prod_traffic_route = {
-        listener_arns = [module.alb.listener_arns["group-dashboard"]]
+        listener_arns = [module.alb.listener_arns["https"]]
       }
       # Test Listener
       test_traffic_route = {
-        listener_arns = [module.alb.listener_arns["group-dashboard-green"]]
+        listener_arns = [module.alb.listener_arns["https-test"]]
       }
-      # Target Group for Blue
+      # Blue Target Group
       blue_target_group = {
-        name = module.alb.target_group_arns["group-dashboard"]
+        name = "group-dashboard-tg"
       }
-      # Target Group for Green
+      # Green Target Group
       green_target_group = {
-        name = module.alb.target_group_arns["group-dashboard-green"]
+        name = "group-dashboard-green-tg"
       }
     }
   }

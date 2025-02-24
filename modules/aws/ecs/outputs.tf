@@ -7,10 +7,8 @@ output "cluster_id" {
 }
 
 output "service_name" {
-  description = "Map of ECS service names"
-  value       = try(aws_ecs_capacity_provider.this, null)
+  value = try(aws_ecs_service.main[0].name, null)
 }
-
 
 ################################################################################
 # Cluster Capacity Providers
