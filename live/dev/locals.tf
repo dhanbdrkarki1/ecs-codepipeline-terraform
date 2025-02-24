@@ -66,10 +66,11 @@ locals {
   alb_listeners = {
     # HTTPS Production Listener
     https = {
-      port            = 443
-      protocol        = "HTTPS"
-      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      certificate_arn = module.acm.certificate_arn
+      port       = 443
+      protocol   = "HTTPS"
+      ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      # certificate_arn = module.acm.certificate_arn
+      certificate_arn = data.aws_acm_certificate.amazon_issued.arn
       fixed_response = {
         content_type = "text/plain"
         message_body = "404: page not found"
@@ -95,10 +96,11 @@ locals {
 
     # HTTPS Test Listener (Green)
     https-test = {
-      port            = 8443 # Different port for test traffic
-      protocol        = "HTTPS"
-      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      certificate_arn = module.acm.certificate_arn
+      port       = 8443 # Different port for test traffic
+      protocol   = "HTTPS"
+      ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      # certificate_arn = module.acm.certificate_arn
+      certificate_arn = data.aws_acm_certificate.amazon_issued.arn
       fixed_response = {
         content_type = "text/plain"
         message_body = "404: page not found"

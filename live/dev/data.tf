@@ -6,6 +6,13 @@ data "aws_ssm_parameter" "ecs_optimized_ami" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
 
+# Find a certificate issued by (not imported into) ACM
+data "aws_acm_certificate" "amazon_issued" {
+  domain      = "*.karkidhan.com.np"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
 # # Fetch the default VPC
 # data "aws_vpc" "default" {
 #   default = true
