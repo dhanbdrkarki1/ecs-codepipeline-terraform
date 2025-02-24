@@ -30,10 +30,21 @@ module "codedeploy" {
   }
 
   # Blue Green Deployment Config
+  #   blue_green_deployment_config = {
+  #     deployment_ready_option = {
+  #       action_on_timeout    = "STOP_DEPLOYMENT"
+  #       wait_time_in_minutes = 10
+  #     }
+  #     terminate_blue_instances_on_deployment_success = {
+  #       action                           = "TERMINATE"
+  #       termination_wait_time_in_minutes = 5
+  #     }
+  #   }
+
   blue_green_deployment_config = {
     deployment_ready_option = {
-      action_on_timeout    = "STOP_DEPLOYMENT"
-      wait_time_in_minutes = 10
+      action_on_timeout    = "CONTINUE_DEPLOYMENT" # Changed from STOP_DEPLOYMENT
+      wait_time_in_minutes = 0                     # Set to 0 to not wait for notification
     }
     terminate_blue_instances_on_deployment_success = {
       action                           = "TERMINATE"

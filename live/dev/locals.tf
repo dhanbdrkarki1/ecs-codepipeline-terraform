@@ -8,9 +8,9 @@ locals {
     group-dashboard = {
       name             = "group-dashboard"
       instance_type    = "t3.small" # t3.small has 2vCPUs and 2 Memory and "t3.large" has 8 GiB memory
-      min_size         = 1
+      min_size         = 2
       desired_capacity = 2
-      max_size         = 2
+      max_size         = 4
       volume_size      = 30
     }
   }
