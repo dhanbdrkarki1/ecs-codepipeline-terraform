@@ -21,27 +21,7 @@ module "codedeploy" {
   ]
 
   # Load Balancer
-  load_balancer_info = {
-    target_group_pair_info = {
-      # Production Listener
-      prod_traffic_route = {
-        listener_arns = [module.alb.listener_arns["group-dashboard"]]
-      }
-      # Test Listener
-      test_traffic_route = {
-        listener_arns = [module.alb.listener_arns["group-dashboard-green"]]
-      }
-      # Target Group for Blue
-      blue_target_group = {
-        name = module.alb.target_group_arns["group-dashboard"]
-      }
-      # Target Group for Green
-      green_target_group = {
-        name = module.alb.target_group_arns["group-dashboard-green"]
-      }
-    }
-  }
-
+  load_balancer_info = local.load_balancer_info
 
   # Deployment settings
   deployment_style = {
