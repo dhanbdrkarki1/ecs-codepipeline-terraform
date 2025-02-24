@@ -74,7 +74,7 @@ module "ecs_services" {
       managed_termination_protection = "DISABLED"
       managed_scaling = {
         minimum_scaling_step_size = 1 # Minimum number of instances to scale in/out
-        maximum_scaling_step_size = 2 # Maximum number of instances to scale in/out
+        maximum_scaling_step_size = 1 # Maximum number of instances to scale in/out
         status                    = "ENABLED"
         target_capacity           = 85 # Percentage of resource utilization target (uses 80% instance resources and maintains 15% buffer)
       }
