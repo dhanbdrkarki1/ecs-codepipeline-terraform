@@ -75,21 +75,21 @@ module "asgs" {
   }
 
   # Instance refresh
-  instance_refresh = {
-    strategy = "Rolling"
-    preferences = {
-      checkpoint_delay             = 600
-      checkpoint_percentages       = [35, 70, 100]
-      instance_warmup              = 300
-      min_healthy_percentage       = 50
-      max_healthy_percentage       = 100
-      auto_rollback                = true
-      scale_in_protected_instances = "Refresh"
-      standby_instances            = "Terminate"
-      skip_matching                = false
-    }
-    triggers = []
-  }
+  # instance_refresh = {
+  #   strategy = "Rolling"
+  #   preferences = {
+  #     checkpoint_delay             = 600
+  #     checkpoint_percentages       = [35, 70, 100]
+  #     instance_warmup              = 300
+  #     min_healthy_percentage       = 50
+  #     max_healthy_percentage       = 100
+  #     auto_rollback                = true
+  #     scale_in_protected_instances = "Refresh"
+  #     standby_instances            = "Terminate"
+  #     skip_matching                = false
+  #   }
+  #   triggers = []
+  # }
 
   custom_tags = {
     Environment      = var.environment
