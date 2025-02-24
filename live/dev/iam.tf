@@ -127,6 +127,38 @@ module "ecs_task_execution_role" {
 }
 
 
+#================================
+# CodeDeploy - ECS Role and Policy
+#================================
+module "ecs_codedeploy_role" {
+  source           = "../../modules/aws/iam"
+  create           = true
+  role_name        = "CodeDeployECSRole"
+  role_description = "Allows CodeDeploy to read S3 objects, invoke Lambda functions, publish to SNS topics, and update ECS services on your behalf."
+
+  # Trust relationship policy for CodeDeploy
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "codedeploy.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  role_policies = {
+    AWSCodeDeployRoleForECS = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
+  }
+  custom_tags = {
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
 
 #================================
 # ECS Auto Scaling Role and Policy
