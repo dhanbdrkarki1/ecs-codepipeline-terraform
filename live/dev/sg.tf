@@ -31,6 +31,11 @@ module "ecs_sg" {
       rule                     = "http-80-tcp"
       source_security_group_id = module.alb_sg.security_group_id
     },
+    {
+      description              = "Allow http port 8080 from ALB"
+      rule                     = "http-8080-tcp"
+      source_security_group_id = module.alb_sg.security_group_id
+    },
   ]
   egress_rules = ["all-all"]
   custom_tags = {
