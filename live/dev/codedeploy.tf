@@ -16,7 +16,6 @@ module "codedeploy" {
   ecs_service = [
     {
       cluster_name = module.ecs_cluster.cluster_name
-      #   service_name = module.ecs_services["group-dashboard"].service_name
       service_name = module.ecs_services["group-dashboard"].service_name
     }
   ]

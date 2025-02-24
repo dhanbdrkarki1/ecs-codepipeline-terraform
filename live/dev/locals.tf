@@ -13,14 +13,6 @@ locals {
       max_size         = 2
       volume_size      = 30
     }
-    # rep-dashboard = {
-    #   name             = "rep-dashboard"
-    #   instance_type    = "t3.medium" // t3.medium has 4 GiB total memory 
-    #   min_size         = 2
-    #   desired_capacity = 2
-    #   max_size         = 3
-    #   volume_size      = 50
-    # }
   }
 
   ###########################
@@ -152,10 +144,6 @@ locals {
       name              = "/ecs/service/group-dashboard"
       retention_in_days = 30
     }
-    # rep-dashboard = {
-    #   name              = "/ecs/service/rep-dashboard"
-    #   retention_in_days = 30
-    # }
   }
 
   ###########################
@@ -208,50 +196,6 @@ locals {
         base    = 1
       }
     }
-    # rep-dashboard = {
-    #   desired_count     = 2
-    #   cpu               = 1024 // 1 vCPU
-    #   memory            = 1536 // 1.5 GiB instead of 2 GiB
-    #   memoryReservation = 256
-
-    #   container_definitions = [
-    #     {
-    #       name      = "rep-dashboard"
-    #       cpu       = 256
-    #       memory    = 512 // Container memory
-    #       essential = true
-    #       image     = "public.ecr.aws/e1z1p8n3/dhan/rep-dashboard:latest"
-    #       # healthCheck = {
-    #       #   command = ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
-    #       # }
-    #       portMappings = [
-    #         {
-    #           containerPort = 80
-    #           hostPort      = 80
-    #           protocol      = "tcp"
-    #         }
-    #       ]
-    #       readonlyRootFilesystem = false
-    #       logConfiguration = {
-    #         logDriver = "awslogs"
-    #         options = {
-    #           "awslogs-group"         = module.cloudwatch_log_groups["rep-dashboard"].log_group_name
-    #           "awslogs-region"        = data.aws_region.current.name
-    #           "awslogs-stream-prefix" = "rep-dashboard"
-    #         }
-    #       }
-    #     }
-    #   ]
-    #   container_name = "rep-dashboard"
-    #   container_port = 80
-    #   target_group   = "rep-dashboard"
-    #   capacity_provider = {
-    #     name    = "rep-dashboard-cp"
-    #     asg_arn = module.asgs["rep-dashboard"].asg_arn
-    #     weight  = 100
-    #     base    = 1
-    #   }
-    # }
   }
 
   # CodeDeploy Load Balancer
