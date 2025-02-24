@@ -60,7 +60,7 @@ module "ecs_services" {
 
   # Capacity provider configuration
   capacity_provider_strategy = {
-    "${each.value.capacity_provider.name}" = {
+    (each.value.capacity_provider.name) = {
       weight = each.value.capacity_provider.weight
       base   = each.value.capacity_provider.base
     }
@@ -69,7 +69,7 @@ module "ecs_services" {
   # Cluster capacity providers
   default_capacity_provider_use_fargate = false
   autoscaling_capacity_providers = {
-    "${each.value.capacity_provider.name}" = {
+    (each.value.capacity_provider.name) = {
       auto_scaling_group_arn         = each.value.capacity_provider.asg_arn
       managed_termination_protection = "DISABLED"
       managed_scaling = {
