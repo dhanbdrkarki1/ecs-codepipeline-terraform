@@ -7,10 +7,10 @@ locals {
   asg_services = {
     group-dashboard = {
       name             = "group-dashboard"
-      instance_type    = "t3.large" # "t3.large" has 8 GiB memory
-      min_size         = 2
+      instance_type    = "t3.small" # t3.small has 2vCPUs and 2 Memory and "t3.large" has 8 GiB memory
+      min_size         = 1
       desired_capacity = 2
-      max_size         = 4
+      max_size         = 3
       volume_size      = 30
     }
     # rep-dashboard = {
@@ -41,8 +41,8 @@ locals {
         interval            = 60
         path                = "/"
         port                = "traffic-port"
-        healthy_threshold   = 2
-        unhealthy_threshold = 2
+        healthy_threshold   = 2 # should be in range (2-10)
+        unhealthy_threshold = 2 # should be in range (2-10)
         timeout             = 30
         protocol            = "HTTP"
         matcher             = "200-399"
@@ -137,15 +137,15 @@ locals {
   ecs_services = {
     group-dashboard = {
       desired_count     = 2
-      cpu               = 1024
-      memory            = 2048 // Reduce to 2 GiB per task
+      cpu               = 1024 // .5vCPU
+      memory            = 1536 // 2 GiB per task
       memoryReservation = 256
 
       # Container definition(s)
       container_definitions = [
         {
           name      = "group-dashboard"
-          cpu       = 256
+          cpu       = 512
           memory    = 512
           essential = true
           image     = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
