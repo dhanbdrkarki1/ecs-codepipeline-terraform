@@ -166,10 +166,14 @@ variable "deployment_circuit_breaker" {
 }
 
 variable "deployment_controller" {
-  description = "Configuration block for deployment controller configuration"
+  description = <<-DOC
+    Configuration block for deployment controller configuration.
+    type - (Optional) Type of deployment controller. Valid values: CODE_DEPLOY, ECS, EXTERNAL. Default: ECS.
+  DOC
   type        = any
   default     = {}
 }
+
 
 variable "deployment_maximum_percent" {
   description = "Upper limit (as a percentage of the service's `desired_count`) of the number of running tasks that can be running in a service during a deployment"

@@ -49,6 +49,11 @@ module "ecs_services" {
   scheduling_strategy       = "REPLICA"
   health_check_grace_period = 60
 
+  # Deployment Type
+  deployment_controller = {
+    type = "CODE_DEPLOY" # Set to ECS, if don't want to use Codedeploy
+  }
+
   # Load Balancer
   load_balancer = {
     service = {
