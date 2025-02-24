@@ -12,7 +12,7 @@ variable "domain_name" {
   type        = string
 }
 
-variable "alternative_names_to_domain" {
+variable "subject_alternative_names" {
   description = "Set of domains that should be SANs in the issued certificate."
   type        = list(string)
   default     = null

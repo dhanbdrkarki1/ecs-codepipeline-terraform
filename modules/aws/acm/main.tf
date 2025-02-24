@@ -8,7 +8,7 @@ resource "aws_acm_certificate" "cert" {
   count = var.create ? 1 : 0
   # provider = aws.acm_default_region
   domain_name               = var.domain_name
-  subject_alternative_names = try(var.alternative_names_to_domain, null)
+  subject_alternative_names = try(var.subject_alternative_names, null)
   validation_method         = var.acm_validation_method
 
   lifecycle {

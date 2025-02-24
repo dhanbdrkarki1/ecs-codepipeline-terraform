@@ -10,7 +10,7 @@ locals {
       instance_type    = "t3.small" # t3.small has 2vCPUs and 2 Memory and "t3.large" has 8 GiB memory
       min_size         = 1
       desired_capacity = 2
-      max_size         = 3
+      max_size         = 2
       volume_size      = 30
     }
     # rep-dashboard = {
@@ -71,9 +71,12 @@ locals {
 
   # Listener Rules
   alb_listeners = {
-    fixed-response = {
-      port     = 80
-      protocol = "HTTP"
+    # HTTPS
+    https = {
+      port            = 443
+      protocol        = "HTTPS"
+      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      certificate_arn = module.acm.certificate_arn
       fixed_response = {
         content_type = "text/plain"
         message_body = "404: page not found"
@@ -83,7 +86,7 @@ locals {
       rules = {
         # Group Dashboard
         group-dashboard = {
-          priority = 200
+          priority = 100
           actions = [
             {
               type             = "forward"
@@ -96,22 +99,18 @@ locals {
             }
           }]
         }
-        # # Rep Dashboard
-        # rep-dashboard = {
-        #   priority = 300
-        #   actions = [
-        #     {
-        #       type             = "forward"
-        #       target_group_arn = try(module.alb.target_group_arns["rep-dashboard"], null)
-        #     }
-        #   ]
-        #   conditions = [{
-        #     host_header = {
-        #       values = ["rep-dashboard.karkidhan.com.np"]
-        #     }
-        #   }]
-        # }
       }
+    }
+  }
+
+  # Redirect http to https
+  http-to-https = {
+    port     = 80
+    protocol = "HTTP"
+    redirect = {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 
