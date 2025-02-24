@@ -55,9 +55,10 @@ locals {
         port                = "traffic-port"
         healthy_threshold   = 2 # should be in range (2-10)
         unhealthy_threshold = 2 # should be in range (2-10)
-        timeout             = 30
-        protocol            = "HTTP"
-        matcher             = "200-399"
+        # timeout             = 30
+        timeout  = 5
+        protocol = "HTTP"
+        matcher  = "200-399"
       }
     }
   }
