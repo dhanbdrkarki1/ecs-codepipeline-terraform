@@ -29,6 +29,7 @@ locals {
 
   # Target Groups
   alb_target_groups = {
+    # Blue
     group-dashboard = {
       name                 = "group-dashboard-tg"
       protocol             = "HTTP"
@@ -48,25 +49,25 @@ locals {
         matcher             = "200-399"
       }
     }
-    # rep-dashboard = {
-    #   name                 = "rep-dashboard-tg"
-    #   protocol             = "HTTP"
-    #   port                 = 80
-    #   target_type          = "instance"
-    #   deregistration_delay = 10
+    group-dashboard-green = {
+      name                 = "group-dashboard-green-tg"
+      protocol             = "HTTP"
+      port                 = 8080
+      target_type          = "instance"
+      deregistration_delay = 10
 
-    #   health_check = {
-    #     enabled             = true
-    #     interval            = 60
-    #     path                = "/"
-    #     port                = "traffic-port"
-    #     healthy_threshold   = 2
-    #     unhealthy_threshold = 2
-    #     timeout             = 30
-    #     protocol            = "HTTP"
-    #     matcher             = "200-399"
-    #   }
-    # }
+      health_check = {
+        enabled             = true
+        interval            = 60
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2 # should be in range (2-10)
+        unhealthy_threshold = 2 # should be in range (2-10)
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    }
   }
 
   # Listener Rules
@@ -91,6 +92,21 @@ locals {
             {
               type             = "forward"
               target_group_arn = try(module.alb.target_group_arns["group-dashboard"], null)
+            }
+          ]
+          conditions = [{
+            host_header = {
+              values = ["group-dashboard.karkidhan.com.np"]
+            }
+          }]
+        }
+        # Group Dashboard - Green
+        group-dashboard-green = {
+          priority = 200
+          actions = [
+            {
+              type             = "forward"
+              target_group_arn = try(module.alb.target_group_arns["group-dashboard-green"], null)
             }
           ]
           conditions = [{
