@@ -8,9 +8,9 @@ locals {
     group-dashboard = {
       name             = "group-dashboard"
       instance_type    = "t3.small" # 2 vCPU (2048 CPU units), 2GB (2048 MB) memory
-      min_size         = 2
-      desired_capacity = 2
-      max_size         = 4
+      min_size         = 1
+      desired_capacity = 1
+      max_size         = 2
       volume_size      = 30
     }
   }
@@ -157,17 +157,17 @@ locals {
     group-dashboard = {
       desired_count = 1
       cpu           = 512
-      memory        = 1024
-      # memoryReservation = 256 # Ensures memory flexibility & prevents out-of-memory kills.
+      memory        = 512
 
       # Container definition(s)
       container_definitions = [
         {
-          name      = "group-dashboard"
-          cpu       = 512
-          memory    = 1024
-          essential = true
-          image     = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
+          name              = "group-dashboard"
+          cpu               = 512
+          memory            = 512
+          memoryReservation = 256 # Ensures memory flexibility & prevents out-of-memory kills.
+          essential         = true
+          image             = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
           # healthCheck = { # Changed from health_check to healthCheck
           #   command     = ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
           #   interval    = 30
