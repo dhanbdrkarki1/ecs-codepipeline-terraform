@@ -77,18 +77,24 @@ module "ecs_services" {
     (each.value.capacity_provider.name) = {
       auto_scaling_group_arn         = each.value.capacity_provider.asg_arn
       managed_termination_protection = "DISABLED"
-      managed_scaling = {
-        minimum_scaling_step_size = 1 # Minimum number of instances to scale in/out
-        maximum_scaling_step_size = 1 # Maximum number of instances to scale in/out
-        status                    = "ENABLED"
-        target_capacity           = 85 # Percentage of resource utilization target (uses 80% instance resources and maintains 15% buffer)
-      }
+      # managed_scaling = {
+      #   minimum_scaling_step_size = 1 # Scale out by minimum 1 instance
+      #   maximum_scaling_step_size = 1 # Scale out by maximum 1 instance
+      #   status                    = "ENABLED"
+      #   target_capacity           = 85 # Use 85% of instance capacity before scaling
+      # }
       default_capacity_provider_strategy = {
         weight = each.value.capacity_provider.weight
         base   = each.value.capacity_provider.base
       }
     }
   }
+
+  # # Deployment Circuit Breaker (only supported with ECS (rolling update) deployment controller)
+  # deployment_circuit_breaker = {
+  #   enable   = true
+  #   rollback = true
+  # }
 
   custom_tags = {
     Environment = var.environment

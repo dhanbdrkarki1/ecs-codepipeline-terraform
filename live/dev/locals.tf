@@ -7,7 +7,7 @@ locals {
   asg_services = {
     group-dashboard = {
       name             = "group-dashboard"
-      instance_type    = "t3.small" # t3.small has 2vCPUs and 2 Memory and "t3.large" has 8 GiB memory
+      instance_type    = "t3.small" # 2 vCPU (2048 CPU units), 2GB (2048 MB) memory
       min_size         = 2
       desired_capacity = 2
       max_size         = 4
@@ -155,17 +155,17 @@ locals {
   # ECS Services
   ecs_services = {
     group-dashboard = {
-      desired_count     = 2
-      cpu               = 1024 // .5vCPU
-      memory            = 1536 // 2 GiB per task
-      memoryReservation = 256
+      desired_count = 1
+      cpu           = 512
+      memory        = 1024
+      # memoryReservation = 256 # Ensures memory flexibility & prevents out-of-memory kills.
 
       # Container definition(s)
       container_definitions = [
         {
           name      = "group-dashboard"
           cpu       = 512
-          memory    = 512
+          memory    = 1024
           essential = true
           image     = "public.ecr.aws/e1z1p8n3/dhan/group-app-web:latest"
           # healthCheck = { # Changed from health_check to healthCheck
@@ -199,8 +199,8 @@ locals {
       capacity_provider = {
         name    = "group-dashboard-cp"
         asg_arn = module.asgs["group-dashboard"].asg_arn
-        weight  = 1
-        base    = 1
+        weight  = 100
+        base    = 0 # Setting base to 0 lets ECS scale based on actual need. The capacity provider with base = 1 tells ECS to maintain at least one instance worth of capacity
       }
     }
   }

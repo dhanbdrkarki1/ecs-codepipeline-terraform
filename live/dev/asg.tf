@@ -55,7 +55,7 @@ module "asgs" {
     }
   ]
 
-  protect_from_scale_in = false
+  protect_from_scale_in = false # Protect instances with running tasks
 
   # Scaling Policy
   create_auto_scaling_policy = false
