@@ -1,6 +1,8 @@
 locals {
   ecs_ami_id = jsondecode(data.aws_ssm_parameter.ecs_optimized_ami.value)["image_id"]
 
+  domain_name = "*.karkidhan.com.np"
+
   ###########################
   # Auto Scaling Groups
   ###########################

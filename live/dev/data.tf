@@ -8,7 +8,7 @@ data "aws_ssm_parameter" "ecs_optimized_ami" {
 
 # Find a certificate issued by (not imported into) ACM
 data "aws_acm_certificate" "amazon_issued" {
-  domain      = "*.karkidhan.com.np"
+  domain      = local.domain_name
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
