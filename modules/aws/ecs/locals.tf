@@ -17,13 +17,6 @@ locals {
     }
   }
 
-  # Flattened `network_configuration`
-  network_configuration = {
-    assign_public_ip = var.assign_public_ip
-    security_groups  = var.security_groups_ids
-    subnets          = var.subnet_groups_ids
-  }
-
   ecs_capacity_provider_names = [for k, v in aws_ecs_capacity_provider.this : v.name]
 
   account_id = data.aws_caller_identity.current.account_id

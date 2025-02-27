@@ -39,6 +39,18 @@ module "ecs_services" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
 
+  # Network Configuration (required for network_mode set to EC2)
+  network_configuration = {
+    subnets          = module.vpc.public_subnet_ids
+    assign_public_ip = false
+    security_groups = [
+      module.ecs_sg.security_group_id
+    ]
+  }
+
+
+
+
   # EFS settings (if needed)
   mount_efs_volume = false
   container_path   = "/"   # path on the container to mount the host volume at e.g. /app

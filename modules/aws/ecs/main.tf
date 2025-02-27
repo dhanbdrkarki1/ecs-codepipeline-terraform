@@ -96,7 +96,7 @@ resource "aws_ecs_service" "main" {
 
 
   dynamic "network_configuration" {
-    for_each = var.network_mode == "awsvpc" ? [local.network_configuration] : []
+    for_each = var.network_mode == "awsvpc" ? [var.network_configuration] : []
 
     content {
       assign_public_ip = network_configuration.value.assign_public_ip

@@ -224,25 +224,39 @@ variable "load_balancer" {
 
 
 
-
-
-variable "security_groups_ids" {
-  description = "A list of security group IDs to assign to the ECS Task"
-  type        = list(string)
-  default     = []
+# Network Configuration
+variable "network_configuration" {
+  description = "Network configuration for the ECS service"
+  type = object({
+    subnets          = list(string)
+    assign_public_ip = bool
+    security_groups  = list(string)
+  })
+  default = {
+    subnets          = []
+    assign_public_ip = false
+    security_groups  = []
+  }
 }
 
-variable "subnet_groups_ids" {
-  description = "A list of subnet group IDs to assign to the ECS Task"
-  type        = list(string)
-  default     = []
-}
 
-variable "assign_public_ip" {
-  description = "Assign a public IP address to the ENI (Fargate launch type only)"
-  type        = bool
-  default     = false
-}
+# variable "security_groups_ids" {
+#   description = "A list of security group IDs to assign to the ECS Task"
+#   type        = list(string)
+#   default     = []
+# }
+
+# variable "subnet_groups_ids" {
+#   description = "A list of subnet group IDs to assign to the ECS Task"
+#   type        = list(string)
+#   default     = []
+# }
+
+# variable "assign_public_ip" {
+#   description = "Assign a public IP address to the ENI (Fargate launch type only)"
+#   type        = bool
+#   default     = false
+# }
 
 
 variable "ecs_task_family_name" {
