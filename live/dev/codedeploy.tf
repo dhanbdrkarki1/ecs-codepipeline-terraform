@@ -37,13 +37,15 @@ module "codedeploy" {
 
   # Blue Green Deployment Config
   blue_green_deployment_config = {
+    # defines what happens if the new deployment takes too long (i.e., timeout before success)
     deployment_ready_option = {
-      action_on_timeout    = "CONTINUE_DEPLOYMENT" # Changed from STOP_DEPLOYMENT
-      wait_time_in_minutes = 0                     # Set to 0 to not wait for notification
+      action_on_timeout    = "STOP_DEPLOYMENT"
+      wait_time_in_minutes = 3 # Set to 2-5 to allow time for health checks while still ensuring fast rollbacks. 
     }
+    # handles what happens to the old (blue) version after a successful deployment
     terminate_blue_instances_on_deployment_success = {
-      action                           = "TERMINATE"
-      termination_wait_time_in_minutes = 5
+      action                           = "TERMINATE" # The old version will be removed after a successful deployment.
+      termination_wait_time_in_minutes = 2           # CodeDeploy will wait 2 minutes before shutting down old tasks.
     }
   }
 
