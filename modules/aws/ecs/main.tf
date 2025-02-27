@@ -55,6 +55,15 @@ resource "aws_ecs_task_definition" "app" {
     }
   }
 
+  dynamic "runtime_platform" {
+    for_each = length(var.runtime_platform) > 0 ? [var.runtime_platform] : []
+
+    content {
+      cpu_architecture        = try(runtime_platform.value.cpu_architecture, null)
+      operating_system_family = try(runtime_platform.value.operating_system_family, null)
+    }
+  }
+
   tags = merge(
     { "Name" = "${local.name_prefix}" },
     var.custom_tags

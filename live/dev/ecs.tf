@@ -36,19 +36,21 @@ module "ecs_services" {
   memory                   = each.value.memory
   ecs_task_family_name     = "${each.key}-task"
   ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
-  network_mode             = "awsvpc"
+  network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
-
-  # Network Configuration (required for network_mode set to EC2)
-  network_configuration = {
-    subnets          = module.vpc.public_subnet_ids
-    assign_public_ip = false
-    security_groups = [
-      module.ecs_sg.security_group_id
-    ]
+  runtime_platform = {
+    cpu_architecture        = "X86_64"
+    operating_system_family = "LINUX"
   }
 
-
+  # # Network Configuration (required for network_mode set to awsvpc)
+  # network_configuration = {
+  #   subnets          = module.vpc.public_subnet_ids
+  #   assign_public_ip = true
+  #   security_groups = [
+  #     module.ecs_sg.security_group_id
+  #   ]
+  # }
 
 
   # EFS settings (if needed)

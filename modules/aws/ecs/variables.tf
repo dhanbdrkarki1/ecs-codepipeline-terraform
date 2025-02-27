@@ -88,6 +88,14 @@ variable "requires_compatibilities" {
   default     = ["FARGATE"]
 }
 
+variable "runtime_platform" {
+  description = "Configuration block for `runtime_platform` that containers in your task may use"
+  type        = any
+  default = {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+}
 
 #---------------------------
 # Container Task Definition
