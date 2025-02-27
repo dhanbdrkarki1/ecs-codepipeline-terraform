@@ -23,6 +23,12 @@ module "codedeploy" {
   # Load Balancer
   load_balancer_info = local.load_balancer_info
 
+  # Rollback on Failure
+  auto_rollback_configuration = {
+    enabled = true
+    events  = ["DEPLOYMENT_FAILURE"]
+  }
+
   # Deployment settings
   deployment_style = {
     deployment_option = "WITH_TRAFFIC_CONTROL"

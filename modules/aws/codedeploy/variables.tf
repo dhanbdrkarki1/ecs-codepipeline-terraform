@@ -38,7 +38,7 @@ variable "auto_rollback_configuration" {
   default     = null
   description = <<-DOC
     Configuration block of the automatic rollback configuration associated with the deployment group.
-    The event type or types that trigger a rollback. Supported types are `DEPLOYMENT_FAILURE` and `DEPLOYMENT_STOP_ON_ALARM`."
+    The event type or types that trigger a rollback. Supported types are DEPLOYMENT_FAILURE, DEPLOYMENT_STOP_ON_ALARM and DEPLOYMENT_STOP_ON_REQUEST.
   DOC
 }
 

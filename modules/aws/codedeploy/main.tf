@@ -2,9 +2,9 @@
 #     AWS CodeDeploy 
 #================================
 locals {
-  name_prefix = lower("${var.custom_tags["Project"] != "" ? var.custom_tags["Project"] : "default-project"}-${var.custom_tags["Environment"] != "" ? var.custom_tags["Environment"] : "default-env"}-${var.name}")
-  # enable_auto_rollback_configuration = var.create && var.auto_rollback_configuration != null && length(var.auto_rollback_configuration) > 0
-  enable_alarm_configuration = var.create && var.alarm_configuration != null
+  name_prefix                        = lower("${var.custom_tags["Project"] != "" ? var.custom_tags["Project"] : "default-project"}-${var.custom_tags["Environment"] != "" ? var.custom_tags["Environment"] : "default-env"}-${var.name}")
+  enable_auto_rollback_configuration = var.create && var.auto_rollback_configuration != null && length(var.auto_rollback_configuration) > 0
+  enable_alarm_configuration         = var.create && var.alarm_configuration != null
 }
 
 # App defintion
@@ -54,14 +54,14 @@ resource "aws_codedeploy_deployment_group" "this" {
     }
   }
 
-  # dynamic "auto_rollback_configuration" {
-  #   for_each = local.enable_auto_rollback_configuration ? [1] : [0]
+  dynamic "auto_rollback_configuration" {
+    for_each = local.enable_auto_rollback_configuration ? [var.auto_rollback_configuration] : []
 
-  #   content {
-  #     enabled = try(auto_rollback_configuration.value.enabled, null)
-  #     events  = try(auto_rollback_configuration.value.events, null)
-  #   }
-  # }
+    content {
+      enabled = auto_rollback_configuration.value.enabled
+      events  = auto_rollback_configuration.value.events
+    }
+  }
 
   dynamic "ecs_service" {
     for_each = var.ecs_service == null ? [] : var.ecs_service
