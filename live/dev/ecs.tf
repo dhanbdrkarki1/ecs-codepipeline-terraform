@@ -36,7 +36,7 @@ module "ecs_services" {
   memory                   = each.value.memory
   ecs_task_family_name     = "${each.key}-task"
   ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
-  network_mode             = "bridge"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
 
   # EFS settings (if needed)

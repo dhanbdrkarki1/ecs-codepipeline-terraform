@@ -28,7 +28,7 @@ locals {
       name                 = "group-dashboard-tg"
       protocol             = "HTTP"
       port                 = 80
-      target_type          = "instance"
+      target_type          = "ip"
       deregistration_delay = 10
 
       health_check = {
@@ -47,7 +47,7 @@ locals {
       name                 = "group-dashboard-green-tg"
       protocol             = "HTTP"
       port                 = 8080
-      target_type          = "instance"
+      target_type          = "ip"
       deregistration_delay = 10
 
       health_check = {
@@ -180,8 +180,8 @@ locals {
           portMappings = [
             {
               containerPort = 80
-              hostPort      = 80
-              protocol      = "tcp"
+              # hostPort      = 80 # no need if network mode is set to awsvpc
+              protocol = "tcp"
             }
           ]
           readonlyRootFilesystem = false
