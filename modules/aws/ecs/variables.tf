@@ -41,8 +41,16 @@ variable "cluster_configuration" {
 }
 
 variable "cluster_settings" {
-  description = "List of configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster"
-  type        = any
+  description = <<-DOC
+    List of configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster.
+    Valid values: enhanced, enabled, disabled.
+    - enhanced: Provides detailed health and performance metrics at the task and container level, in addition to aggregated metrics at the cluster and service level. Enables easier drill downs for faster problem isolation and troubleshooting.
+    - enabled: Provides aggregated metrics at the cluster and service level.
+    - disabled: Disables all metrics collection.
+  DOC
+
+  type = any
+
   default = [
     {
       name  = "containerInsights"
@@ -50,6 +58,7 @@ variable "cluster_settings" {
     }
   ]
 }
+
 
 variable "cluster_service_connect_defaults" {
   description = "Configures a default Service Connect namespace"

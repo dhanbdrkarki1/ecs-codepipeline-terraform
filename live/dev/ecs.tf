@@ -7,7 +7,7 @@ module "ecs_cluster" {
   cluster_settings = [
     {
       name  = "containerInsights"
-      value = "enabled"
+      value = "enhanced" # Set to "enhanced" to view container level metrics. enabled - for service level and cluster
     }
   ]
 
