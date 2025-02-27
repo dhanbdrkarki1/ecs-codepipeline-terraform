@@ -46,7 +46,7 @@ locals {
     group-dashboard-green = {
       name                 = "group-dashboard-green-tg"
       protocol             = "HTTP"
-      port                 = 8081
+      port                 = 8080
       target_type          = "instance"
       deregistration_delay = 10
 
