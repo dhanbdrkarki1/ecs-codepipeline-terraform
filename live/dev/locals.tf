@@ -47,7 +47,7 @@ locals {
       name                 = "group-dashboard-green-tg"
       protocol             = "HTTP"
       port                 = 8080
-      target_type          = "ip"
+      target_type          = "instance"
       deregistration_delay = 10
 
       health_check = {
@@ -177,6 +177,26 @@ locals {
           #   retries     = 3
           #   startPeriod = 60 # Give enough time for application to start
           # }
+
+          # Regular environment variables
+          # environment = [
+          #   {
+          #     name  = "NODE_ENV"
+          #     value = "production"
+          #   },
+          #   {
+          #     name  = "PORT"
+          #     value = "80"
+          #   }
+          # ]
+
+          # Sensitive environment (update task role permission if used)
+          # secrets = [
+          #   {
+          #     name      = "DB_PASSWORD"
+          #     valueFrom = ""
+          #   }
+          # ]
           portMappings = [
             {
               containerPort = 80
