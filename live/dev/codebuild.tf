@@ -226,7 +226,7 @@ module "codebuild" {
     },
     {
       name  = "CONTAINER_NAME"
-      value = var.project_name
+      value = var.project_name # update later
       type  = "PLAINTEXT"
     }
   ]

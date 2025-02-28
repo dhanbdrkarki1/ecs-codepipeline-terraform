@@ -330,19 +330,26 @@ module "codepipeline" {
         }
       }
     },
+    # Blue/Green Deployment
     {
       name = "Deploy"
       action = {
         name            = "Deploy"
         category        = "Deploy"
         owner           = "AWS"
-        provider        = "CodeDeploy"
+        provider        = "CodeDeployToECS"
         version         = "1"
         input_artifacts = ["BuildOutput"]
         run_order       = 3
         configuration = {
-          ApplicationName     = module.codedeploy.application_name
-          DeploymentGroupName = module.codedeploy.deployment_group_name
+          ApplicationName                = module.codedeploy.application_name
+          DeploymentGroupName            = module.codedeploy.deployment_group_name
+          TaskDefinitionTemplateArtifact = "BuildOutput"
+          TaskDefinitionTemplatePath     = "taskdef.json"
+          AppSpecTemplateArtifact        = "BuildOutput"
+          AppSpecTemplatePath            = "appspec.yaml"
+          Image1ArtifactName             = "BuildOutput"
+          Image1ContainerName            = "IMAGE1_NAME" // must match the placeholder for image in taskdef.json
         }
       }
     }
