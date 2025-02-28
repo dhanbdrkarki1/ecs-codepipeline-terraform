@@ -149,10 +149,39 @@ module "codepipeline_service_role" {
         Condition = {
           StringEqualsIfExists = {
             "iam:PassedToService" = [
+              "ecs-tasks.amazonaws.com",
+              "codedeploy.amazonaws.com",
               "ec2.amazonaws.com"
             ]
           }
         }
+      },
+      # ECS Permissions
+      {
+        Sid    = "ECSAccess"
+        Effect = "Allow"
+        Action = [
+          "ecs:RegisterTaskDefinition",
+          "ecs:ListTaskDefinitions",
+          "ecs:DescribeTaskDefinition",
+          "ecs:DescribeServices",
+          "ecs:UpdateService",
+          "ecs:DeleteTaskDefinitions"
+        ]
+        Resource = "*"
+      },
+      # ECR Permissions
+      {
+        Sid    = "ECRAccess"
+        Effect = "Allow"
+        Action = [
+          "ecr:DescribeImages",
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ]
+        Resource = "*"
       },
       # Approval Policy
       {
@@ -210,7 +239,12 @@ module "codepipeline_service_role" {
           "codedeploy:GetApplicationRevision",
           "codedeploy:GetDeployment",
           "codedeploy:GetDeploymentConfig",
-          "codedeploy:RegisterApplicationRevision"
+          "codedeploy:RegisterApplicationRevision",
+          "codedeploy:BatchGetApplicationRevisions",
+          "codedeploy:BatchGetDeploymentGroups",
+          "codedeploy:BatchGetDeployments",
+          "codedeploy:ContinueDeployment",
+          "codedeploy:StopDeployment"
         ]
         Resource = try(module.codedeploy.arn, "*")
       },
@@ -230,7 +264,10 @@ module "codepipeline_service_role" {
           "ec2:DescribeInstances",
           "ec2:DescribeInstanceStatus",
           "elasticloadbalancing:DescribeTargetGroups",
-          "elasticloadbalancing:DescribeTargetHealth"
+          "elasticloadbalancing:DescribeTargetHealth",
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DescribeListeners",
+          "elasticloadbalancing:DescribeRules"
         ]
         Resource = "*"
       },
@@ -243,6 +280,7 @@ module "codepipeline_service_role" {
         ]
         Resource = "*"
       }
+
       # {
       #   Sid    = "KMSAccess"
       #   Effect = "Allow"
