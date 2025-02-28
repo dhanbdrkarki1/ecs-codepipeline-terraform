@@ -166,7 +166,10 @@ module "codepipeline_service_role" {
           "ecs:DescribeTaskDefinition",
           "ecs:DescribeServices",
           "ecs:UpdateService",
-          "ecs:DeleteTaskDefinitions"
+          "ecs:DeleteTaskDefinitions",
+          "ecs:TagResource",
+          "ecs:UntagResource",
+          "ecs:ListTagsForResource"
         ]
         Resource = "*"
       },
