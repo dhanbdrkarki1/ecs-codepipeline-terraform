@@ -40,7 +40,7 @@ module "codedeploy" {
     # defines what happens if the new deployment takes too long (i.e., timeout before success)
     deployment_ready_option = {
       action_on_timeout    = "STOP_DEPLOYMENT"
-      wait_time_in_minutes = 3 # Set to 2-5 to allow time for health checks while still ensuring fast rollbacks. 
+      wait_time_in_minutes = 5 # Set to 2-5 to allow time for health checks while still ensuring fast rollbacks. 
     }
     # handles what happens to the old (blue) version after a successful deployment
     terminate_blue_instances_on_deployment_success = {
