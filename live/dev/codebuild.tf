@@ -211,12 +211,12 @@ module "codebuild" {
     },
     {
       name  = "AWS_DEFAULT_REGION"
-      value = var.aws_region
+      value = local.aws_region
       type  = "PLAINTEXT"
     },
     {
       name  = "AWS_ACCOUNT_ID"
-      value = var.aws_account_id
+      value = local.account_id
       type  = "PLAINTEXT"
     },
     {
