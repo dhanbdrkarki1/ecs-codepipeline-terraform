@@ -2,7 +2,7 @@
 # CodeBuild S3
 #================================
 module "codebuild_artifact_bucket" {
-  source               = "../../modules/services/s3"
+  source               = "../../modules/aws/s3"
   create               = true
   bucket_name          = "codebuild-logs"
   enable_versioning    = true
@@ -42,7 +42,7 @@ module "codebuild_artifact_bucket" {
 # CodeBuild Log Group
 #================================
 module "codebuild_log_group" {
-  source            = "../../modules/services/cloudwatch"
+  source            = "../../modules/aws/cloudwatch"
   create            = true
   name              = "/aws/codebuild/${var.project_name}-${var.environment}"
   retention_in_days = 30
@@ -57,7 +57,7 @@ module "codebuild_log_group" {
 # CodeBuild Service Role and Policy
 #================================
 module "codebuild_service_role" {
-  source           = "../../modules/services/iam"
+  source           = "../../modules/aws/iam"
   create           = true
   role_name        = "CodeBuildServiceRole"
   role_description = "IAM role for CodeBuild"
@@ -161,7 +161,7 @@ module "codebuild_service_role" {
 
 
 module "codebuild" {
-  source      = "../../modules/services/codebuild"
+  source      = "../../modules/aws/codebuild"
   create      = var.create_codebuild
   name        = var.codebuild_name
   description = var.codebuild_description

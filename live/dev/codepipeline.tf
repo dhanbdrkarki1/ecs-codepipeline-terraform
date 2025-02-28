@@ -2,7 +2,7 @@
 # CodePipeline Artifact Store
 #================================
 module "codepipeline_artifact_bucket" {
-  source               = "../../modules/services/s3"
+  source               = "../../modules/aws/s3"
   create               = true
   bucket_name          = "codepipeline-artifact"
   enable_versioning    = false
@@ -74,7 +74,7 @@ module "codepipeline_artifact_bucket" {
 # SNS Notification
 #================================
 module "sns_notification" {
-  source       = "../../modules/services/sns"
+  source       = "../../modules/aws/sns"
   create       = true
   name         = "codepipeline-sns-topic"
   display_name = "codepipeline-sns-topic"
@@ -117,7 +117,7 @@ module "sns_notification" {
 # CodePipeline Service Role
 #================================
 module "codepipeline_service_role" {
-  source           = "../../modules/services/iam"
+  source           = "../../modules/aws/iam"
   create           = true
   role_name        = "CodePipelineServiceRole"
   role_description = "IAM role for CodePipeline"
@@ -270,7 +270,7 @@ module "codepipeline_service_role" {
 #================================
 
 module "codepipeline" {
-  source = "../../modules/services/codepipeline"
+  source = "../../modules/aws/codepipeline"
   create = var.create_codepipeline
   # Pipeline
   pipeline_type           = "V2"
