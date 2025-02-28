@@ -34,15 +34,15 @@ locals {
       deregistration_delay = 10
 
       health_check = {
-        enabled             = true
-        interval            = 60
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 2 # should be in range (2-10)
-        unhealthy_threshold = 2 # should be in range (2-10)
-        timeout             = 30
-        protocol            = "HTTP"
-        matcher             = "200-399"
+        enabled             = true           # Enables health checks for the target group
+        interval            = 60             # Time in seconds between each health check. Every 60 seconds, AWS will send a health check request
+        path                = "/"            # The endpoint AWS will call to check health. In this case, it's checking the root path
+        port                = "traffic-port" # Which port to use for health checks. "traffic-port" means use the same port as your application
+        healthy_threshold   = 2              # Number of consecutive successful health checks. required before considering an unhealthy target healthy. Here, needs 2 successful checks to mark as healthy
+        unhealthy_threshold = 2              # Number of consecutive failed health checks. required before considering a healthy target unhealthy. Here, needs 2 failed checks to mark as unhealthy
+        timeout             = 5              # Number of seconds to wait for a response. If no response within 5 seconds, counts as a failed check
+        protocol            = "HTTP"         # Protocol to use for health checks. Could also be HTTPS, TCP, etc.
+        matcher             = "200-399"      # HTTP response codes that count as successful. Any response code between 200-399 is considered healthy
       }
     }
     group-dashboard-green = {
@@ -53,16 +53,15 @@ locals {
       deregistration_delay = 10
 
       health_check = {
-        enabled             = true
-        interval            = 60
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 2 # should be in range (2-10)
-        unhealthy_threshold = 2 # should be in range (2-10)
-        # timeout             = 30
-        timeout  = 5
-        protocol = "HTTP"
-        matcher  = "200-399"
+        enabled             = true           # Enables health checks for the target group
+        interval            = 60             # Time in seconds between each health check. Every 60 seconds, AWS will send a health check request
+        path                = "/"            # The endpoint AWS will call to check health. In this case, it's checking the root path
+        port                = "traffic-port" # Which port to use for health checks. "traffic-port" means use the same port as your application
+        healthy_threshold   = 2              # Number of consecutive successful health checks. required before considering an unhealthy target healthy. Here, needs 2 successful checks to mark as healthy
+        unhealthy_threshold = 2              # Number of consecutive failed health checks. required before considering a healthy target unhealthy. Here, needs 2 failed checks to mark as unhealthy
+        timeout             = 5              # Number of seconds to wait for a response. If no response within 5 seconds, counts as a failed check
+        protocol            = "HTTP"         # Protocol to use for health checks. Could also be HTTPS, TCP, etc.
+        matcher             = "200-399"      # HTTP response codes that count as successful. Any response code between 200-399 is considered healthy
       }
     }
   }
@@ -251,5 +250,3 @@ locals {
     }
   }
 }
-
-
