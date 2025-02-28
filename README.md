@@ -60,7 +60,7 @@ Clone the repository to your local machine:
 ```bash
 git clone https://github.com/CloudTechService/terraform-custom-dhan.git
 cd terraform-custom-dhan/
-git checkout blue-green-demo
+git checkout blue-green-pipeline-demo
 ```
 
 ### 2. Creating S3 Bucket for Terraform Remote State Management
