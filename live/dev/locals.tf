@@ -125,17 +125,16 @@ locals {
         }
       }
     }
-  }
 
-
-  # Redirect http to https
-  http-to-https = {
-    port     = 80
-    protocol = "HTTP"
-    redirect = {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
+    # Redirect http to https
+    http-to-https = {
+      port     = 80
+      protocol = "HTTP"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
     }
   }
 
