@@ -61,6 +61,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_ecs_task_definition" "app" {
   count                    = var.create_services ? 1 : 0
   family                   = var.ecs_task_family_name
+  task_role_arn            = var.ecs_task_role
   execution_role_arn       = try(var.ecs_task_execution_role, null)
   network_mode             = var.network_mode
   requires_compatibilities = var.requires_compatibilities
@@ -108,6 +109,8 @@ resource "aws_ecs_service" "main" {
   # launch_type                       = var.launch_type
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
+  enable_ecs_managed_tags           = var.enable_ecs_managed_tags
+  enable_execute_command            = var.enable_execute_command
 
   dynamic "load_balancer" {
     for_each = { for k, v in var.load_balancer : k => v }

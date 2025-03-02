@@ -41,12 +41,15 @@ module "ecs_services" {
   # Container Definition (JSON-encoded)
   container_definitions = jsonencode(each.value.container_definitions)
 
+  # Enables ECS Exec
+  enable_execute_command = true
 
   # Task Definition
   cpu                      = each.value.cpu
   memory                   = each.value.memory
   ecs_task_family_name     = "${each.key}-task"
-  ecs_task_execution_role  = module.ecs_task_execution_role.role_arn
+  ecs_task_execution_role  = try(module.ecs_task_execution_role.role_arn, null)
+  ecs_task_role            = try(module.ecs_task_role.role_arn, null)
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   runtime_platform = {

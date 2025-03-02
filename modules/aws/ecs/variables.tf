@@ -69,6 +69,17 @@ variable "cluster_service_connect_defaults" {
 ##############
 # Service
 ##############
+variable "enable_ecs_managed_tags" {
+  description = "Specifies whether to enable Amazon ECS managed tags for the tasks within the service"
+  type        = bool
+  default     = false
+}
+
+variable "enable_execute_command" {
+  description = "Specifies whether to enable Amazon ECS Exec for the tasks within the service"
+  type        = bool
+  default     = false
+}
 
 ####################
 # Task Definition
@@ -398,6 +409,12 @@ variable "ecs_log_group_name" {
 # IAM Role
 variable "ecs_task_execution_role" {
   description = "ARN of the IAM role that allows Amazon ECS to make calls to other AWS services."
+  type        = string
+  default     = null
+}
+
+variable "ecs_task_role" {
+  description = "ARN of the task role that the Amazon ECS container agent and the Docker daemon can assume"
   type        = string
   default     = null
 }

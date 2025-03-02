@@ -126,6 +126,53 @@ module "ecs_task_execution_role" {
   }
 }
 
+#================================
+# ECS Task Role
+#================================
+module "ecs_task_role" {
+  source           = "../../modules/aws/iam"
+  create           = true
+  role_name        = "TaskRole"
+  role_description = "IAM role for ECS Task"
+
+  # Trust relationship policy for ECS Task
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  # ECS permissions policy
+  policy_document = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Policy for ECS Exec
+      {
+        Sid    = "ECSExecPolicy"
+        Effect = "Allow"
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  custom_tags = {
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
 
 #================================
 # CodeDeploy - ECS Role and Policy
