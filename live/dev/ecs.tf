@@ -13,9 +13,10 @@ module "ecs_cluster" {
 
   # Cluster configuration
   cluster_configuration = {
-    # maintain an audit trail of all commands executed within your containers
+    # Enables ECS Exec
     execute_command_configuration = {
       logging = "OVERRIDE"
+      # maintain an audit trail of all commands executed within your containers
       log_configuration = {
         cloud_watch_log_group_name = module.cloudwatch_log_groups["ecs-exec-command"].log_group_name
       }
