@@ -10,13 +10,6 @@ locals {
     "readOnly"      = var.read_only
   }]) : jsonencode([])
 
-  execute_command_configuration = {
-    logging = "OVERRIDE"
-    log_configuration = {
-      cloud_watch_log_group_name = try(var.ecs_log_group_name, null)
-    }
-  }
-
   ecs_capacity_provider_names = [for k, v in aws_ecs_capacity_provider.this : v.name]
 
   account_id = data.aws_caller_identity.current.account_id

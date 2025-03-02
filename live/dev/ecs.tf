@@ -11,6 +11,17 @@ module "ecs_cluster" {
     }
   ]
 
+  # Cluster configuration
+  cluster_configuration = {
+    # maintain an audit trail of all commands executed within your containers
+    execute_command_configuration = {
+      logging = "OVERRIDE"
+      log_configuration = {
+        cloud_watch_log_group_name = "/aws/ecs/aws-ec2"
+      }
+    }
+  }
+
   # Only cluster-related configurations here
   custom_tags = {
     Environment = var.environment
