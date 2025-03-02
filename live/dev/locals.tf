@@ -147,6 +147,12 @@ locals {
       name              = "/ecs/service/group-dashboard"
       retention_in_days = 30
     }
+
+    # ECS Execute Command Configuration - keeps an audit trail of all commands executed within the containers
+    ecs-exec-command = {
+      name              = "/aws/ecs/exec-command-logs"
+      retention_in_days = 30
+    }
   }
 
   ###########################
