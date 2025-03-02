@@ -149,7 +149,7 @@ module "ecs_task_role" {
     ]
   })
 
-  # ECS permissions policy
+  # ECS Exec permissions policy
   policy_document = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -164,7 +164,19 @@ module "ecs_task_role" {
           "ssmmessages:OpenDataChannel"
         ]
         Resource = "*"
-      }
+      },
+      # Policy for ECS Exec command loging
+      {
+        Sid    = "ECSExecLoggingPolicy"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents"
+        ]
+        Resource = try("${module.cloudwatch_log_groups["ecs-exec-command"].log_group_arn}:*", "*")
+      },
     ]
   })
 
