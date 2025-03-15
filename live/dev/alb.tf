@@ -10,57 +10,9 @@ module "alb" {
   security_groups_ids = [module.alb_sg.security_group_id]
   health_check_path   = "/"
 
-  target_groups = {
-    ec2-instance = {
-      protocol             = "HTTP"
-      port                 = 80
-      target_type          = "instance"
-      deregistration_delay = 10
+  target_groups = local.alb_target_groups
 
-      health_check = {
-        enabled             = true
-        interval            = 60
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 2
-        unhealthy_threshold = 2
-        timeout             = 30
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
-    }
-  }
-
-  listeners = {
-    fixed-response = {
-      port     = 80
-      protocol = "HTTP"
-      fixed_response = {
-        content_type = "text/plain"
-        message_body = "404: page not found"
-        status_code  = "404"
-      }
-
-      rules = {
-        fixed-response = {
-          priority = 100
-          actions = [
-            {
-              type = "forward"
-              # for EC2 Target (Instance)
-              target_group_arn = try(module.alb.target_group_arns["ec2-instance"], null) # For EC2 Type
-            }
-          ]
-
-          conditions = [{
-            path_pattern = {
-              values = ["*"]
-            }
-          }]
-        }
-      }
-    }
-  }
+  listeners = local.alb_listeners
 
   custom_tags = {
     Environment = var.environment

@@ -8,3 +8,10 @@ output "asg_arn" {
   value       = try(aws_autoscaling_group.this[0].arn, null)
   description = "The Amazon Resource Name (ARN) of the Auto Scaling Group"
 }
+
+# output "asg_arns" {
+#   value = {
+#     for key, asg in module.asgs : key => asg.asg_arn
+#   }
+#   description = "The Amazon Resource Name (ARN) of the Auto Scaling Group"
+# }

@@ -1,14 +1,16 @@
 #================================
-# ECS Log Group for ECS Tasks
+# CloudWatch Log Groups
 #================================
-module "ecs_log_group" {
-  source            = "../../modules/aws/cloudwatch"
-  create            = true
-  name              = "/ecs/${var.project_name}-${var.environment}"
-  retention_in_days = 30
-
+module "cloudwatch_log_groups" {
+  source   = "../../modules/aws/cloudwatch"
+  for_each = local.log_groups
+  create   = true
+  # Format: /ecs/<type>/<service-name>/<environment>/<project>
+  name              = "${each.value.name}/${var.environment}/${var.project_name}"
+  retention_in_days = each.value.retention_in_days
   custom_tags = {
-    Name        = "/ecs/${var.project_name}-${var.environment}"
+    Name        = "${each.value.name}/${var.environment}/${var.project_name}"
     Environment = var.environment
+    Project     = var.project_name
   }
 }

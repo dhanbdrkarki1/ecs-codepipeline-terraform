@@ -1,22 +1,25 @@
-# Terraform for AWS Infrastructure and Pipeline
+# Terraform for AWS Infrastructure
 
 ## Overview
 
-This project includes different modules to setup AWS Infrastructure and AWS CI/CD pipeline.
+This project includes different modules to setup AWS Infrastructure for ECS with EC2 launch type. Also, added Blue/Green Deployment Support.
 
 Modules included:
 
-- CodeDeploy
-- CodePipeline
-- CodeBuild
+- Amazon Certificate Manager (ACM)
+- Application Load Balancer (ALB)
+- Auto Scaling Group (ASG)
 - CloudWatch
+- CodeDeploy
+- RDS
 - DynamoDB
-- ECR
 - EC2
+- ECR
 - IAM
 - S3
-- Security Groups
+- Security Groups (sg)
 - SNS
+- VPC
 
 ## Prerequisites
 
@@ -38,6 +41,16 @@ Modules included:
        --region DEFAULT_REGION
    ```
 
+## Directory Structure
+
+```bash
+terraform-custom-dhan/
+├── live/
+│ └── dev/
+│ ├── locals.tf
+│ └── other terraform files...
+```
+
 ## Setup
 
 ### 1. Clone the Repository
@@ -45,14 +58,15 @@ Modules included:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/dhan-cloudtech/codepipeline-cicd-docker.git
-cd codepipeline-cicd-docker/
+git clone https://github.com/CloudTechService/terraform-custom-dhan.git
+cd terraform-custom-dhan/
+git checkout blue-green-pipeline-demo
 ```
 
 ### 2. Creating S3 Bucket for Terraform Remote State Management
 
 ```bash
-cd codepipeline-cicd-docker/remote-state/todo-app
+cd terraform-custom-dhan/remote-state/dev
 ```
 
 Update providers.tf file:
@@ -91,12 +105,12 @@ terraform apply -auto-approve
 
 Before creating infrastructure, take these steps into consideration:
 
-#### Update provider.hcl
+#### Update providers.tf
 
 Navigate to,
 
 ```bash
-cd codepipeline-cicd-docker/todo-app
+cd terraform-custom-dhan/dev
 ```
 
 Update the providers.tf with the above created bucket name and dynamodb table, displayed in terraform console output and AWS profile.
@@ -108,12 +122,35 @@ bucket = "<Name_of_the_S3_Bucket_for_remote_state>"
 dynamodb_table  = "<Name_of_the_DynamoDb_Table_for_state_locking>"
 ```
 
-#### Customizing the Infrastructure
+#### Running Infrastructure
 
-To change the resource attributes,
-use main.tf, pipeline.tf and other .tf file in the root module.
+This project uses Terraform command to provision infrastructure across all modules.
 
-For example, if you want to change the name of the ec2, go to ec2.tf "ec2" module block and update name:
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+#### Customizing the Infrastructure (Optional)
+
+You can customize various AWS resources by modifying their respective `.tf` files in the root module. Below are the key customization options for each resource type:
+
+##### 1. terraform.tfvars Configuration
+
+This file contains environment-specific variables. Customize these values based on your requirements:
+
+```hcl
+project_name       = "dhan-custom"
+availability_zones = ["us-east-2a", "us-east-2b"]
+environment        = "dev"
+```
+
+##### 2. locals.tf Configuration
+
+This file contains local variables used across multiple resources. Look through it and make a change accordingly.
+
+To change the resource attributes of other .tf file in the root module, for example, if you want to change the name of the vpc, go to vpc.tf "vpc" module block and update name:
 
 ```
 name                       = "<Desired VPC Name>"
@@ -122,15 +159,10 @@ name                       = "<Desired VPC Name>"
 
 Likewise, you can modify for other resources.
 
-#### Running Infrastructure
+## Important Notes
 
-This project uses Terraform apply command to provision infrastructure across all modules.
-
-```bash
-terraform init
-terraform plan
-terraform apply
-```
+Don't forget to manually create ACM certificate in AWS ACM and update the domain name in locals.tf.
+Also, update the CNAME name and value in your domain provider.
 
 ## Destroying Infrastructure Resources (Optional)
 

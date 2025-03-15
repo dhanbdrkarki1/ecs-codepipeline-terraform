@@ -1,37 +1,38 @@
 #================================
 # Global
 #================================
-project_name       = "dhan-custom"
-aws_region         = "us-east-2"
-availability_zones = ["us-east-2a", "us-east-2b"]
-environment        = "dev"
-
+project_name       = "dhan-custom"                # Base name for all resources
+availability_zones = ["us-east-2a", "us-east-2b"] # Multi-AZ deployment for high availability
+environment        = "dev"                        # Environment identifier (dev/staging/prod)
 
 #================================
-# Elastic Container Service (ECS)
+# CodeBuild
 #================================
-create_ecs           = true
-ecs_name             = "todo-ecs-test"
-ecs_task_family_name = "todo-test"
+create_codebuild      = true                 # Enable/disable CodeBuild creation
+codebuild_name        = "codebuild"          # Name of the CodeBuild project
+codebuild_description = "This is codebuild." # Description for the CodeBuild project
 
-ecs_container_name = "todo-test"
-ecs_container_port = 80
-ecs_app_cpu        = 256
-ecs_app_memory     = 512
+// For testing, set build_output_artifact_type = "NO_ARTIFACTS" and build_project_source_type = "NO_SOURCE"
+// For production, set build_output_artifact_type = "CODEPIPELINE" and build_project_source_type = "CODEPIPELINE"
 
-ecs_desired_count         = 0
-ecs_min_capacity          = 0
-ecs_max_capacity          = 4
-ecs_scale_up_adjustment   = 1
-ecs_scale_down_adjustment = -1
-ecs_cooldown_period       = 60
+# Artifact
+codebuild_build_output_artifact_type = "CODEPIPELINE" # Artifact output configuration for pipeline integration
 
-# efs - need to set create=true in efs.hcl and sg_efs.hcl
-ecs_mount_efs_volume = false
-# efs_file_system_id = dependency.efs.outputs.id 
-ecs_container_path             = "/"   # path on the container to mount the host volume at e.g. /app
-ecs_read_only_container_volume = false # read-only access to the volume
-ecs_enable_container_insights  = true
+# source
+codebuild_build_project_source_type = "CODEPIPELINE"  # Source type for build project
+codebuild_buildspec_file_location   = "buildspec.yml" # Location of buildspec file in repository
 
-# If CodeDeploy is used for deployment, set deployment_controller_type = "CODE_DEPLOY" otherwise "ECS" for ECS deployment type.
-ecs_deployment_controller_type = "ECS"
+# Environment
+codebuild_compute_type                = "BUILD_GENERAL1_SMALL"       # Build instance size (3GB memory, 2 vCPU)
+codebuild_image                       = "aws/codebuild/standard:7.0" # Base image for build environment
+codebuild_type                        = "LINUX_CONTAINER"            # Container type for builds
+codebuild_image_pull_credentials_type = "CODEBUILD"                  # Credentials for pulling build images
+codebuild_privileged_mode             = false                        # Docker daemon access (required for Docker builds)
+
+#================================
+# CodePipeline
+#================================
+create_codepipeline = true                                                                                             # Enable/disable CodePipeline creation
+github_repo_id      = "CloudTechService/group-app-web"                                                                 # GitHub repository identifier
+github_repo_branch  = "blue-green-codepipeline-demo"                                                                   # Source branch for deployments
+codeconnection_arn  = "arn:aws:codeconnections:us-east-2:779846783124:connection/c28c391e-1a4c-4490-93e2-71b986b2180b" # AWS CodeStar GitHub connection

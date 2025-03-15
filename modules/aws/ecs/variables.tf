@@ -1,11 +1,16 @@
 #########
 # ECS
 #########
-
-variable "create" {
+variable "create_cluster" {
   default     = false
   type        = bool
-  description = "Specify whether to create resource or not"
+  description = "Specify whether to create ECS cluster or not"
+}
+
+variable "create_services" {
+  default     = false
+  type        = bool
+  description = "Specify whether to create ECS service or not"
 }
 
 variable "name" {
@@ -17,6 +22,18 @@ variable "name" {
 ##############
 # Cluster
 ##############
+variable "cluster_id" {
+  description = "The ID of the ECS Cluster"
+  default     = null
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "The Name of the ECS Cluster"
+  default     = null
+  type        = string
+}
+
 variable "cluster_configuration" {
   description = "The execute command configuration for the cluster"
   type        = any
@@ -24,8 +41,16 @@ variable "cluster_configuration" {
 }
 
 variable "cluster_settings" {
-  description = "List of configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster"
-  type        = any
+  description = <<-DOC
+    List of configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster.
+    Valid values: enhanced, enabled, disabled.
+    - enhanced: Provides detailed health and performance metrics at the task and container level, in addition to aggregated metrics at the cluster and service level. Enables easier drill downs for faster problem isolation and troubleshooting.
+    - enabled: Provides aggregated metrics at the cluster and service level.
+    - disabled: Disables all metrics collection.
+  DOC
+
+  type = any
+
   default = [
     {
       name  = "containerInsights"
@@ -33,6 +58,7 @@ variable "cluster_settings" {
     }
   ]
 }
+
 
 variable "cluster_service_connect_defaults" {
   description = "Configures a default Service Connect namespace"
@@ -43,6 +69,17 @@ variable "cluster_service_connect_defaults" {
 ##############
 # Service
 ##############
+variable "enable_ecs_managed_tags" {
+  description = "Specifies whether to enable Amazon ECS managed tags for the tasks within the service"
+  type        = bool
+  default     = false
+}
+
+variable "enable_execute_command" {
+  description = "Specifies whether to enable Amazon ECS Exec for the tasks within the service"
+  type        = bool
+  default     = false
+}
 
 ####################
 # Task Definition
@@ -71,6 +108,14 @@ variable "requires_compatibilities" {
   default     = ["FARGATE"]
 }
 
+variable "runtime_platform" {
+  description = "Configuration block for `runtime_platform` that containers in your task may use"
+  type        = any
+  default = {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+}
 
 #---------------------------
 # Container Task Definition
@@ -102,13 +147,13 @@ variable "host_port" {
 
 }
 
-variable "app_cpu" {
+variable "cpu" {
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
   type        = string
   default     = "256"
 }
 
-variable "app_memory" {
+variable "memory" {
   description = "Fargate instance memory to provision (in MiB)"
   type        = string
   default     = "512"
@@ -133,6 +178,12 @@ variable "container_definition_template" {
   type        = string
 }
 
+variable "container_definitions" {
+  description = "A map of container definitions for the ECS service"
+  type        = any
+  default     = {}
+}
+
 
 
 
@@ -143,10 +194,14 @@ variable "deployment_circuit_breaker" {
 }
 
 variable "deployment_controller" {
-  description = "Configuration block for deployment controller configuration"
+  description = <<-DOC
+    Configuration block for deployment controller configuration.
+    type - (Optional) Type of deployment controller. Valid values: CODE_DEPLOY, ECS, EXTERNAL. Default: ECS.
+  DOC
   type        = any
   default     = {}
 }
+
 
 variable "deployment_maximum_percent" {
   description = "Upper limit (as a percentage of the service's `desired_count`) of the number of running tasks that can be running in a service during a deployment"
@@ -197,25 +252,39 @@ variable "load_balancer" {
 
 
 
-
-
-variable "security_groups_ids" {
-  description = "A list of security group IDs to assign to the ECS Task"
-  type        = list(string)
-  default     = []
+# Network Configuration
+variable "network_configuration" {
+  description = "Network configuration for the ECS service"
+  type = object({
+    subnets          = list(string)
+    assign_public_ip = bool
+    security_groups  = list(string)
+  })
+  default = {
+    subnets          = []
+    assign_public_ip = false
+    security_groups  = []
+  }
 }
 
-variable "subnet_groups_ids" {
-  description = "A list of subnet group IDs to assign to the ECS Task"
-  type        = list(string)
-  default     = []
-}
 
-variable "assign_public_ip" {
-  description = "Assign a public IP address to the ENI (Fargate launch type only)"
-  type        = bool
-  default     = false
-}
+# variable "security_groups_ids" {
+#   description = "A list of security group IDs to assign to the ECS Task"
+#   type        = list(string)
+#   default     = []
+# }
+
+# variable "subnet_groups_ids" {
+#   description = "A list of subnet group IDs to assign to the ECS Task"
+#   type        = list(string)
+#   default     = []
+# }
+
+# variable "assign_public_ip" {
+#   description = "Assign a public IP address to the ENI (Fargate launch type only)"
+#   type        = bool
+#   default     = false
+# }
 
 
 variable "ecs_task_family_name" {
@@ -340,6 +409,12 @@ variable "ecs_log_group_name" {
 # IAM Role
 variable "ecs_task_execution_role" {
   description = "ARN of the IAM role that allows Amazon ECS to make calls to other AWS services."
+  type        = string
+  default     = null
+}
+
+variable "ecs_task_role" {
+  description = "ARN of the task role that the Amazon ECS container agent and the Docker daemon can assume"
   type        = string
   default     = null
 }

@@ -1,9 +1,37 @@
 #########
 # ECS
 #########
+# ECS Cluster
 resource "aws_ecs_cluster" "main" {
-  count = var.create ? 1 : 0
+  count = var.create_cluster ? 1 : 0
   name  = local.name_prefix
+
+  dynamic "configuration" {
+    for_each = length(var.cluster_configuration) > 0 ? [var.cluster_configuration] : []
+
+    content {
+      dynamic "execute_command_configuration" {
+        for_each = try([configuration.value.execute_command_configuration], [{}])
+
+        content {
+          kms_key_id = try(execute_command_configuration.value.kms_key_id, null)
+          logging    = try(execute_command_configuration.value.logging, "DEFAULT")
+
+          dynamic "log_configuration" {
+            for_each = try([execute_command_configuration.value.log_configuration], [])
+
+            content {
+              cloud_watch_encryption_enabled = try(log_configuration.value.cloud_watch_encryption_enabled, null)
+              cloud_watch_log_group_name     = try(log_configuration.value.cloud_watch_log_group_name, null)
+              s3_bucket_name                 = try(log_configuration.value.s3_bucket_name, null)
+              s3_bucket_encryption_enabled   = try(log_configuration.value.s3_bucket_encryption_enabled, null)
+              s3_key_prefix                  = try(log_configuration.value.s3_key_prefix, null)
+            }
+          }
+        }
+      }
+    }
+  }
 
   dynamic "service_connect_defaults" {
     for_each = length(var.cluster_service_connect_defaults) > 0 ? [var.cluster_service_connect_defaults] : []
@@ -29,34 +57,17 @@ resource "aws_ecs_cluster" "main" {
   )
 }
 
-data "template_file" "container-definition" {
-  count    = var.create ? 1 : 0
-  template = var.container_definition_template
-  vars = {
-    app_image      = var.app_image
-    container_port = var.container_port
-    host_port      = var.host_port
-    app_cpu        = var.app_cpu
-    app_memory     = var.app_memory
-    aws_region     = var.aws_region
-    container_name = var.container_name
-    log_group_name = var.ecs_log_group_name
-
-    # volume mount
-    mount_points = local.mount_points
-  }
-}
-
-
+# Task Definition
 resource "aws_ecs_task_definition" "app" {
-  count                    = var.create ? 1 : 0
+  count                    = var.create_services ? 1 : 0
   family                   = var.ecs_task_family_name
+  task_role_arn            = var.ecs_task_role
   execution_role_arn       = try(var.ecs_task_execution_role, null)
   network_mode             = var.network_mode
   requires_compatibilities = var.requires_compatibilities
-  cpu                      = var.app_cpu
-  memory                   = var.app_memory
-  container_definitions    = element(data.template_file.container-definition.*.rendered, count.index)
+  cpu                      = var.cpu
+  memory                   = var.memory
+  container_definitions    = var.container_definitions
 
   dynamic "volume" {
     for_each = var.mount_efs_volume ? [1] : []
@@ -72,23 +83,34 @@ resource "aws_ecs_task_definition" "app" {
     }
   }
 
+  dynamic "runtime_platform" {
+    for_each = length(var.runtime_platform) > 0 ? [var.runtime_platform] : []
+
+    content {
+      cpu_architecture        = try(runtime_platform.value.cpu_architecture, null)
+      operating_system_family = try(runtime_platform.value.operating_system_family, null)
+    }
+  }
+
   tags = merge(
     { "Name" = "${local.name_prefix}" },
     var.custom_tags
   )
 }
 
-
+# ECS Service
 resource "aws_ecs_service" "main" {
-  count           = var.create ? 1 : 0
+  count           = var.create_services ? 1 : 0
   name            = "${local.name_prefix}-service"
-  cluster         = aws_ecs_cluster.main[0].id
+  cluster         = try(aws_ecs_cluster.main[0].id, var.cluster_id)
   task_definition = aws_ecs_task_definition.app[0].arn
   desired_count   = var.desired_count
   # Remove launch_type completely when using capacity providers
   # launch_type                       = var.launch_type
   scheduling_strategy               = var.scheduling_strategy
   health_check_grace_period_seconds = var.health_check_grace_period
+  enable_ecs_managed_tags           = var.enable_ecs_managed_tags
+  enable_execute_command            = var.enable_execute_command
 
   dynamic "load_balancer" {
     for_each = { for k, v in var.load_balancer : k => v }
@@ -113,7 +135,7 @@ resource "aws_ecs_service" "main" {
 
 
   dynamic "network_configuration" {
-    for_each = var.network_mode == "awsvpc" ? [local.network_configuration] : []
+    for_each = var.network_mode == "awsvpc" ? [var.network_configuration] : []
 
     content {
       assign_public_ip = network_configuration.value.assign_public_ip

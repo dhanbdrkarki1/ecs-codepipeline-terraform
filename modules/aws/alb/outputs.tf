@@ -30,3 +30,8 @@ output "target_group_arns" {
   value       = { for k, v in aws_lb_target_group.this : k => v.arn }
   description = "The ARNs of the created target groups"
 }
+
+output "listener_arns" {
+  description = "ARNs of the created ALB listeners"
+  value       = { for k, v in aws_lb_listener.this : k => v.arn }
+}
